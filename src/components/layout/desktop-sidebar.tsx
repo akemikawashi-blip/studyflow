@@ -41,7 +41,7 @@ export function DesktopSidebar({ user }: { user: AppShellUser }) {
       </div>
 
       <nav
-        className="flex flex-1 flex-col gap-1.5 px-3 py-4"
+        className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-3 py-4"
         aria-label="Primary navigation"
       >
         {desktopNavigation.map((item) => {

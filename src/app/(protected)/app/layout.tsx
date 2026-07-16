@@ -53,7 +53,7 @@ export default async function ProtectedAppLayout({
         : undefined;
 
   return (
-    <div className={themeClass}>
+    <div className={`${themeClass ?? ""} min-h-svh bg-background text-foreground`}>
       <AppShell
         unreadNotifications={unreadNotifications ?? 0}
         user={{

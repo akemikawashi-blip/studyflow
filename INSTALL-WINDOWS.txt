@@ -1,5 +1,6 @@
-StudyFlow Dynamic Core — Windows setup
+StudyFlow Dynamic Academic Tools — Windows setup
 
+NEW INSTALLATION
 1. Create a Supabase project.
 2. Run supabase\phase2-complete.sql in the Supabase SQL Editor.
 3. Double-click setup-studyflow-phase2.bat.
@@ -7,15 +8,12 @@ StudyFlow Dynamic Core — Windows setup
 5. Keep the StudyFlow terminal window open.
 6. Open http://localhost:3000
 
-After the first setup, double-click start-studyflow.bat to run the app again.
+UPGRADING AN EXISTING STUDYFLOW PROJECT
+1. Run supabase\phase3-academic-tools.sql once in the existing Supabase project.
+2. Keep your existing .env.local file in the project folder.
+3. Double-click DEPLOY-STUDYFLOW-TO-VERCEL.bat.
+
+After the first local setup, double-click start-studyflow.bat to run the app again.
 
 Node.js 20.9 or newer is required.
 Never enter a Supabase service-role key in the setup file.
-
-ONE-CLICK METHOD
-================
-1. Double-click START-HERE-STUDYFLOW.bat.
-2. Follow each instruction shown in the window.
-3. The launcher copies the database SQL, opens Supabase, creates .env.local,
-   installs packages, and starts StudyFlow.
-4. On future runs, double-click the same file again. Completed steps are skipped.

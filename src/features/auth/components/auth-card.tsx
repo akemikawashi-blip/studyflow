@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Download, GraduationCap } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 type AuthCardProps = {
   title: string;
@@ -16,7 +16,7 @@ export function AuthCard({
   footer,
 }: AuthCardProps) {
   return (
-    <section className="surface-panel w-full max-w-md rounded-[2rem] p-6 sm:p-8">
+    <section className="surface-panel w-full rounded-[2rem] p-6 sm:p-8 lg:p-10">
       <div className="mb-7">
         <Link
           href="/"
@@ -34,7 +34,7 @@ export function AuthCard({
             </span>
           </span>
         </Link>
-        <h1 className="text-3xl font-semibold tracking-[-0.03em]">{title}</h1>
+        <h1 className="text-3xl font-semibold tracking-[-0.03em] sm:text-4xl">{title}</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {description}
         </p>
@@ -47,14 +47,6 @@ export function AuthCard({
           {footer}
         </div>
       ) : null}
-
-      <Link
-        href="/install"
-        className="focus-ring mt-4 flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-primary hover:bg-primary-fixed/45"
-      >
-        <Download className="size-4" aria-hidden="true" />
-        Install StudyFlow on this device
-      </Link>
     </section>
   );
 }

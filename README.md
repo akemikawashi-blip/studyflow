@@ -1,65 +1,97 @@
-# StudyFlow
+# StudyFlow — Dynamic Academic Tools
 
-StudyFlow is a responsive, installable student productivity application built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Supabase.
+StudyFlow is a responsive student productivity web application built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Supabase.
 
-A deployed StudyFlow link works on phones, tablets, and computers. Every user creates a separate account, and Row Level Security isolates that user's records.
+This package converts every visible application module from preview data to authenticated, user-owned database records.
 
-## Included modules
+## Dynamic modules included
 
-- Secure email registration, verification, login, logout, and password recovery
-- Dashboard calculated from live user data
-- Tasks with create, edit, completion, filtering, and deletion
-- Planner with courses, assignments, and calendar events
-- Study timer, saved sessions, goals, and weekly charts
-- Finance transactions, budgets, balances, and spending summaries
-- Skills and learning goals
-- Notes with search, tags, pinning, favorites, and course links
-- Persistent notifications and due-date alerts
-- Cross-module search
-- Profile, goals, currency, time zone, reminders, and theme settings
-- Installable Progressive Web App with app icons, an install page, and a safe offline screen
-- GitHub Actions checks for linting, TypeScript, and production builds
+- Email/password registration, verification, sign-in, sign-out, and password recovery
+- Server-protected `/app/*` routes with Supabase cookie sessions
+- Dashboard calculations from the signed-in user's live records
+- Tasks: create, edit, complete, reopen, filter, and delete
+- Planner: course, assignment, and calendar-event CRUD
+- Study: working focus timer, manual session logging, editing, deletion, goals, and weekly charts
+- Finance: income/expense CRUD, monthly budgets, balances, spending charts, and budget progress
+- Skills: create, edit, filter, and delete learning goals
+- Notes: create, edit, delete, search, pin, favorite, tag, and connect to courses
+- Notifications: automatic task/assignment deadline alerts, mark-read, mark-all-read, and deletion
+- Search: live cross-module search across tasks, assignments, courses, notes, skills, study sessions, and transactions
+- Settings: persistent profile, currency, time zone, date format, study goals, reminders, and light/dark/system theme
+- Class timetable: weekly class entries with course, day, time, room, teacher, notes, editing, and deletion
+- Exam schedule: dated exams with course, type, time, room, seat details, notes, editing, and deletion
+- GPA and CGPA: semester GPA records with optional credits and automatic credit-weighted overall CGPA
+- Data export: private JSON and CSV downloads containing the signed-in student's saved StudyFlow records
+- PDF summarizer: upload a text-based PDF, generate a short/standard/detailed local summary, review it, copy it, and download a summarized PDF
+- Dynamic unread-notification count in the mobile header
+- Empty states and database-error states
+- Row Level Security for every user-owned table
 
-## Public deployment
+Advanced subfeatures such as syllabus editing, recurring-task generation, skill milestones/resources, reading logs, habits, OCR for scanned PDFs, cloud PDF storage, and PWA/offline support remain outside this build.
 
-Use the included guides and launcher:
-
-```text
-PUBLISH-STUDYFLOW-TO-GITHUB.bat
-DEPLOYMENT-GUIDE.md
-OPEN-PRODUCTION-SETUP.bat
-```
-
-GitHub stores the code. Vercel hosts the public application. Users visit the Vercel URL and open `/install` to add StudyFlow to their device.
-
-## Local requirements
+## Requirements
 
 - Node.js 20.9 or newer
 - npm
 - A Supabase project
-- Internet access
+- Internet connection
 
-## Local setup
+## 1. Install dependencies
 
-### 1. Install dependencies
+Open Command Prompt inside the folder containing `package.json`:
 
-```bash
+```bat
 npm install
 ```
 
-### 2. Create the database
+## 2. Create a Supabase project
 
-In Supabase SQL Editor, run:
+1. Sign in to Supabase.
+2. Create a new project.
+3. Keep the project dashboard open.
 
-```text
-supabase/phase2-complete.sql
+## 3. Create the database
+
+### New installation
+
+The easiest beginner method:
+
+1. In Supabase, open **SQL Editor**.
+2. Open `supabase/phase2-complete.sql` from this project.
+3. Copy the whole file.
+4. Paste it into a new SQL query.
+5. Click **Run**.
+
+The SQL file already contains the tables required by all dynamic modules, including constraints, triggers, indexes, views, and Row Level Security policies.
+
+### Upgrading an existing StudyFlow database
+
+If the older Phase 2 database is already installed, do **not** rerun the whole Phase 2 SQL file. Instead:
+
+1. Open **Supabase → SQL Editor**.
+2. Open `supabase/phase3-academic-tools.sql` from this project.
+3. Copy the complete file, paste it into a new SQL query, and click **Run**.
+4. Deploy the updated application.
+
+This creates the timetable, exam schedule, and academic semester tables with Row Level Security.
+
+CLI alternative:
+
+```bat
+supabase login
+supabase link --project-ref YOUR_PROJECT_REFERENCE
+npm run db:push
 ```
 
-The script creates the tables, constraints, triggers, indexes, views, grants, and Row Level Security policies used by StudyFlow.
+## 4. Add environment variables
 
-### 3. Configure local environment variables
+Copy `.env.example` to `.env.local`:
 
-Copy `.env.example` to `.env.local` and set:
+```bat
+copy .env.example .env.local
+```
+
+Open `.env.local` and replace the placeholders:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
@@ -67,11 +99,13 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
-Use only the Supabase publishable key. Never use a service-role or `sb_secret_...` key in browser-facing variables.
+Find the URL and publishable key in the Supabase project's **Connect** or **API settings** screen.
 
-### 4. Configure local authentication URLs
+Do not add a service-role key to a browser-facing environment variable.
 
-In Supabase Authentication → URL Configuration:
+## 5. Configure authentication URLs
+
+In Supabase Auth URL configuration, use:
 
 ```text
 Site URL:
@@ -82,53 +116,123 @@ http://localhost:3000/auth/callback
 http://localhost:3000/reset-password
 ```
 
-### 5. Start the app
+For production, also add the final deployment domain.
 
-```bash
+## 6. Start StudyFlow
+
+```bat
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open:
 
-## Production environment variables
-
-In Vercel, add:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLISHABLE_KEY
+```text
+http://localhost:3000
 ```
 
-`NEXT_PUBLIC_SITE_URL` is optional because StudyFlow detects the current deployment host. After deployment, add the final Vercel domain to Supabase Auth URL Configuration as described in `DEPLOYMENT-GUIDE.md`.
+When Supabase is not configured, StudyFlow opens `/setup` instead of crashing.
 
 ## Quality checks
 
-```bash
+```bat
 npm run lint
 npm run typecheck
 npm run build
 ```
 
-Run everything together:
+Run all checks together:
 
-```bash
+```bat
 npm run check
 ```
 
+This package was verified with all three checks passing.
+
+## Supabase scripts
+
+```bat
+npm run supabase:start
+npm run supabase:stop
+npm run db:reset
+npm run db:push
+npm run db:types
+```
+
+The local Supabase stack requires Docker Desktop.
+
 ## Security design
 
+- The browser never supplies trusted ownership information.
 - Every Server Action authenticates the current user.
-- Every mutation filters records by both record ID and authenticated user ID.
-- Supabase Row Level Security enforces account separation in the database.
-- Local and production secret files are excluded from Git.
-- The service worker does not cache authenticated HTML or private API responses.
-- Authentication redirects are restricted to internal application paths.
+- Every update and deletion filters by both record ID and authenticated user ID.
+- Row Level Security provides database-level account isolation.
+- The service-role key is not used by normal application code.
+- Authentication redirects are restricted to internal paths.
+- Password-reset responses do not reveal whether an email exists.
+- Notification links are restricted to internal `/app/*` paths before rendering.
 
-## Recommended release test
+## Database files
 
-1. Register and verify a production account.
-2. Create records in every module and refresh the browser.
-3. Test email verification and password reset.
-4. Create a second account and confirm it cannot access the first account's data.
-5. Install the app from `/install` on Android or desktop.
-6. On iPhone or iPad, use Safari → Share → Add to Home Screen.
+```text
+supabase/
+├── phase2-complete.sql
+├── migrations/
+│   ├── 202607100001_extensions_and_enums.sql
+│   ├── 202607100002_tables.sql
+│   ├── 202607100003_triggers.sql
+│   ├── 202607100004_rls_policies.sql
+│   ├── 202607100005_indexes_and_views.sql
+│   └── 202607130001_academic_tools.sql
+├── phase3-academic-tools.sql
+└── seed.sql
+```
+
+`seed.sql` is optional development data. It contains a placeholder user UUID and must not be run unchanged.
+
+## Recommended manual test
+
+1. Register and sign in.
+2. Add a course, assignment, and calendar event in Planner.
+3. Add, edit, complete, reopen, and delete a task.
+4. Run the Study timer for a short session and save it.
+5. Add an income item, expense item, and monthly budget.
+6. Add a skill and a note linked to a course.
+7. Open Search and verify the new records appear.
+8. Open Notifications after creating a task or assignment due within the next few days.
+9. Add weekly classes and an exam in Schedule.
+10. Add semester GPA records and confirm CGPA updates.
+11. Export JSON and CSV data.
+12. Upload a text-based PDF, generate a summary, and download the summarized PDF.
+13. Update profile, study goals, currency, and theme in Settings.
+14. Refresh each page and verify records remain.
+15. Create a second account and confirm it cannot see the first account's records.
+
+## Troubleshooting
+
+### StudyFlow opens the setup page
+
+The project could not read valid Supabase variables. Check `.env.local`, stop the server with `Ctrl+C`, and restart `npm run dev`.
+
+### `relation does not exist`
+
+The SQL migration was not applied, or only part of it ran. Run `supabase/phase2-complete.sql` in the Supabase SQL Editor.
+
+### A module loads but mutations fail
+
+Confirm that the full SQL file was executed, including the RLS policies and grants near the end of the file.
+
+### Verification email does not arrive
+
+Check the Supabase Auth logs, spam folder, email-provider limits, and whether email confirmation is enabled.
+
+### Login succeeds but protected pages redirect back
+
+Confirm the project URL and publishable key belong to the same Supabase project, then clear localhost cookies and sign in again.
+
+### Schedule or GPA page says the database migration is missing
+
+For an existing project, run `supabase/phase3-academic-tools.sql` once in the Supabase SQL Editor. For a brand-new project, run the updated `supabase/phase2-complete.sql`.
+
+### A PDF produces little or no summary
+
+The summarizer reads selectable text. Image-only scanned PDFs require OCR before upload. The current browser tool accepts PDFs up to 20 MB and 120 pages.

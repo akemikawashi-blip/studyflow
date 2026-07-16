@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CalendarPlus, CircleDollarSign, GraduationCap, Plus, Sparkles, SquareCheckBig, X } from "lucide-react";
+import { Award, CalendarClock, CalendarPlus, CircleDollarSign, FileDown, GraduationCap, Plus, Sparkles, SquareCheckBig, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -9,9 +9,12 @@ import { Button } from "@/components/ui/button";
 const quickActions = [
   { label: "Open tasks", href: "/app/tasks", icon: SquareCheckBig },
   { label: "Open planner", href: "/app/planner", icon: CalendarPlus },
+  { label: "Open schedule", href: "/app/schedule", icon: CalendarClock },
+  { label: "Open GPA & CGPA", href: "/app/academic", icon: Award },
   { label: "Log study", href: "/app/study", icon: GraduationCap },
   { label: "Open finance", href: "/app/finance", icon: CircleDollarSign },
   { label: "Open skills", href: "/app/skills", icon: Sparkles },
+  { label: "Export or summarize PDF", href: "/app/export", icon: FileDown },
 ];
 
 export function QuickActionMenu() {

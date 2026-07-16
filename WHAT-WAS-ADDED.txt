@@ -1,0 +1,37 @@
+StudyFlow Academic Tools — Added Features
+
+1. Class Timetable
+- Add, edit, and delete weekly classes
+- Course, day, start/end time, room, teacher, notes, active/inactive status
+- Mobile and desktop responsive timetable cards
+
+2. Exam Schedule
+- Add, edit, and delete exams
+- Course, exam type, date, start/end time, room, seat information, notes
+
+3. GPA and CGPA
+- Save GPA for each semester
+- Save completed credits
+- Automatic credit-weighted overall CGPA
+- Uses a 4.00 GPA scale
+
+4. Data Export
+- Download all user-owned StudyFlow data as JSON
+- Download all user-owned StudyFlow data as CSV
+
+5. PDF Summarizer
+- Upload a text-based PDF
+- Short, standard, or detailed summary
+- Review and copy the summary
+- Download the generated summary as a PDF
+- Files are processed in the browser and are not uploaded to an external AI service
+- Limit: 20 MB and 120 pages
+- Image-only scanned PDFs require OCR
+
+6. Responsive Improvements
+- New pages adapt to phones, tablets, and laptops
+- Mobile More menu scrolls on short screens
+- Desktop sidebar scrolls when the screen height is limited
+
+IMPORTANT DATABASE STEP FOR EXISTING PROJECTS
+Run supabase\phase3-academic-tools.sql once in Supabase SQL Editor before deployment.

@@ -672,6 +672,84 @@ export type Database = {
           updated_at?: string;
         }
       >;
+      class_timetable_entries: TableDefinition<
+        BaseOwnedRow & {
+          course_id: string | null;
+          title: string;
+          day_of_week: number;
+          start_time: string;
+          end_time: string;
+          location: string | null;
+          instructor_name: string | null;
+          notes: string | null;
+          active: boolean;
+        },
+        {
+          id?: string;
+          user_id: string;
+          course_id?: string | null;
+          title: string;
+          day_of_week: number;
+          start_time: string;
+          end_time: string;
+          location?: string | null;
+          instructor_name?: string | null;
+          notes?: string | null;
+          active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        }
+      >;
+      exam_schedules: TableDefinition<
+        BaseOwnedRow & {
+          course_id: string | null;
+          title: string;
+          exam_type: string;
+          exam_date: string;
+          start_time: string | null;
+          end_time: string | null;
+          location: string | null;
+          seat_info: string | null;
+          notes: string | null;
+        },
+        {
+          id?: string;
+          user_id: string;
+          course_id?: string | null;
+          title: string;
+          exam_type?: string;
+          exam_date: string;
+          start_time?: string | null;
+          end_time?: string | null;
+          location?: string | null;
+          seat_info?: string | null;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        }
+      >;
+      academic_semesters: TableDefinition<
+        BaseOwnedRow & {
+          semester_name: string;
+          academic_year: string | null;
+          gpa: number;
+          total_credits: number;
+          notes: string | null;
+          sort_order: number;
+        },
+        {
+          id?: string;
+          user_id: string;
+          semester_name: string;
+          academic_year?: string | null;
+          gpa: number;
+          total_credits?: number;
+          notes?: string | null;
+          sort_order?: number;
+          created_at?: string;
+          updated_at?: string;
+        }
+      >;
       activity_logs: TableDefinition<
         BaseRow & {
           activity_type: string;

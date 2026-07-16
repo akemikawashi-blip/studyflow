@@ -10,7 +10,7 @@ export default async function AuthLayout({
   await redirectAuthenticatedUser();
 
   return (
-    <main className="relative grid min-h-svh place-items-center overflow-hidden px-4 py-10">
+    <main className="relative grid min-h-svh place-items-center overflow-x-hidden px-4 py-6 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
       <div
         className="pointer-events-none absolute inset-0 opacity-70"
         aria-hidden="true"
@@ -19,7 +19,7 @@ export default async function AuthLayout({
             "radial-gradient(circle at 15% 15%, rgb(222 224 255 / 0.8), transparent 30%), radial-gradient(circle at 85% 80%, rgb(133 246 229 / 0.35), transparent 28%)",
         }}
       />
-      <div className="relative z-10 w-full">{children}</div>
+      <div className="relative z-10 mx-auto w-full max-w-xl">{children}</div>
     </main>
   );
 }

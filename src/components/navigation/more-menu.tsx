@@ -63,7 +63,7 @@ export function MoreMenu() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="more-menu-title"
-            className="absolute inset-x-0 bottom-0 rounded-t-[32px] border border-outline-variant/55 bg-popover p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-18px_50px_rgb(17_17_24_/_0.18)]"
+            className="absolute inset-x-0 bottom-0 max-h-[88svh] overflow-y-auto rounded-t-[32px] border border-outline-variant/55 bg-popover p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-18px_50px_rgb(17_17_24_/_0.18)]"
           >
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>

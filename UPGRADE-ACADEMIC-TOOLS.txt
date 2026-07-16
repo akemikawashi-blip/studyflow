@@ -1,0 +1,22 @@
+StudyFlow Academic Tools Upgrade
+
+IMPORTANT: Do this before opening the new Schedule or GPA pages.
+
+1. Sign in to your existing Supabase project.
+2. Open SQL Editor.
+3. Open this project file:
+   supabase\phase3-academic-tools.sql
+4. Copy the whole SQL file.
+5. Paste it into a new Supabase SQL query and click Run.
+6. Keep your existing .env.local file in this project folder.
+7. Double-click DEPLOY-STUDYFLOW-TO-VERCEL.bat.
+
+New features included:
+- Weekly class timetable
+- Exam schedule
+- Semester GPA and overall CGPA
+- Full StudyFlow JSON/CSV data export
+- Text-based PDF summarizer with downloadable summarized PDF
+- Responsive mobile, tablet, and laptop layouts
+
+PDF note: image-only scanned PDFs require OCR and cannot be summarized by this version.

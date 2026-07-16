@@ -46,6 +46,7 @@
   --radius: 1.5rem;
 }
 
+:root:has(.dark),
 .dark {
   --background: #141318;
   --foreground: #e7e1e8;
@@ -90,6 +91,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
+  :root:has(.theme-system),
   .theme-system {
     --background: #141318;
     --foreground: #e7e1e8;
