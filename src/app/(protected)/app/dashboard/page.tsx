@@ -29,7 +29,7 @@ const ASSIGNMENT_STATUS: Record<string, string> = {
 
 function Panel({ title, eyebrow, action, children, className }: { title: string; eyebrow?: string; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
-    <section className={cn("flex flex-col rounded-xl border border-outline-variant/70 bg-card p-5 shadow-card", className)}>
+    <section className={cn("flex min-w-0 flex-col rounded-xl border border-outline-variant/70 bg-card p-5 shadow-card", className)}>
       <header className="mb-4 flex items-start justify-between gap-3">
         <div>
           {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}

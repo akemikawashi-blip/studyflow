@@ -130,6 +130,7 @@ export async function saveSemesterAction(_state: ActionState, formData: FormData
   const values = {
     semester_name: data.name,
     academic_year: data.academicYear,
+    institution: data.institution,
     start_date: data.startDate,
     end_date: data.endDate,
     is_current: data.isCurrent,

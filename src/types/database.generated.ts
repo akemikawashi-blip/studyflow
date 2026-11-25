@@ -315,6 +315,7 @@ export type Database = {
           meeting_url: string | null;
           reminder_at: string | null;
           repeat_rule: Json | null;
+          source: string | null;
         },
         {
           id?: string;
@@ -330,6 +331,7 @@ export type Database = {
           meeting_url?: string | null;
           reminder_at?: string | null;
           repeat_rule?: Json | null;
+          source?: string | null;
           created_at?: string;
           updated_at?: string;
         }
@@ -855,6 +857,7 @@ export type Database = {
           start_date: string | null;
           end_date: string | null;
           is_current: boolean;
+          institution: string | null;
         },
         {
           id?: string;
@@ -868,6 +871,7 @@ export type Database = {
           start_date?: string | null;
           end_date?: string | null;
           is_current?: boolean;
+          institution?: string | null;
           created_at?: string;
           updated_at?: string;
         }
@@ -964,7 +968,8 @@ export type Database = {
         | "deadline"
         | "university_event"
         | "project_deadline"
-        | "extracurricular";
+        | "extracurricular"
+        | "holiday";
       syllabus_status: "not_started" | "in_progress" | "completed";
       study_session_type:
         | "reading"

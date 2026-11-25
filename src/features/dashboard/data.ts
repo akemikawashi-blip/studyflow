@@ -72,7 +72,7 @@ export async function loadDashboard(supabase: ServerClient, userId: string) {
     supabase.from("assignments").select("id,title,assignment_type,due_date,due_time,submission_status,priority,course_id,completed_at,updated_at").eq("user_id", userId).gte("due_date", addDays(today, -120)).lte("due_date", rangeEnd).order("due_date").limit(500),
     supabase.from("exam_schedules").select("id,title,exam_type,exam_date,start_time,location,course_id").eq("user_id", userId).gte("exam_date", rangeStart).lte("exam_date", rangeEnd).order("exam_date").order("start_time").limit(300),
     supabase.from("class_timetable_entries").select("id,title,day_of_week,start_time,end_time,location,course_id,active").eq("user_id", userId).eq("active", true).order("start_time"),
-    supabase.from("calendar_events").select("id,title,start_at,end_at,all_day,event_type,course_id,location").eq("user_id", userId).gte("start_at", new Date(Date.parse(`${rangeStart}T00:00:00Z`) - 86_400_000).toISOString()).lte("start_at", `${addDays(rangeEnd, 1)}T23:59:59Z`).order("start_at").limit(500),
+    supabase.from("calendar_events").select("id,title,start_at,end_at,all_day,event_type,course_id,location").eq("user_id", userId).gte("end_at", new Date(Date.parse(`${rangeStart}T00:00:00Z`) - 86_400_000).toISOString()).lte("start_at", `${addDays(rangeEnd, 1)}T23:59:59Z`).order("start_at").limit(500),
     supabase.from("study_sessions").select("duration_minutes,started_at,course_id").eq("user_id", userId).eq("status", "completed").gte("started_at", new Date(weekStartIso).toISOString()).limit(500),
   ]);
 
@@ -129,17 +129,20 @@ export async function loadDashboard(supabase: ServerClient, userId: string) {
     });
   }
   for (const event of events.data ?? []) {
-    const day = dateKey(new Date(event.start_at), timeZone);
-    agenda.push({
-      id: `event-${event.id}`,
-      kind: event.event_type === "exam" ? "exam" : event.event_type === "class" ? "class" : "event",
-      date: day,
-      time: event.all_day ? null : new Intl.DateTimeFormat("pt-BR", { timeZone, hour: "2-digit", minute: "2-digit" }).format(new Date(event.start_at)),
-      title: event.title,
-      detail: [courseName(event.course_id), event.location].filter(Boolean).join(" · ") || null,
-      href: `/app/calendar?view=day&date=${day}`,
-      color: courseColor(event.course_id),
-    });
+    const firstDay = dateKey(new Date(event.start_at), timeZone);
+    const lastDay = event.all_day ? dateKey(new Date(event.end_at), timeZone) : firstDay;
+    for (let day = firstDay < rangeStart ? rangeStart : firstDay; day <= lastDay && day <= rangeEnd; day = addDays(day, 1)) {
+      agenda.push({
+        id: `event-${event.id}-${day}`,
+        kind: event.event_type === "exam" ? "exam" : event.event_type === "class" ? "class" : "event",
+        date: day,
+        time: event.all_day ? null : new Intl.DateTimeFormat("pt-BR", { timeZone, hour: "2-digit", minute: "2-digit" }).format(new Date(event.start_at)),
+        title: event.title,
+        detail: [courseName(event.course_id), event.location].filter(Boolean).join(" · ") || null,
+        href: `/app/calendar?view=day&date=${day}`,
+        color: courseColor(event.course_id),
+      });
+    }
   }
   for (const task of tasks.data ?? []) {
     if (!task.due_date || !OPEN_TASK.has(task.status)) continue;
@@ -197,7 +200,10 @@ export async function loadDashboard(supabase: ServerClient, userId: string) {
   // ---------------------------------------------------------------- lists
   const upcomingExams = agenda
     .filter((item) => item.kind === "exam" && item.date >= today)
-    .filter((item, index, all) => all.findIndex((other) => other.id === item.id) === index)
+    .filter((item, index, all) => {
+      const stem = (id: string) => id.replace(/-\d{4}-\d{2}-\d{2}$/, "");
+      return all.findIndex((other) => stem(other.id) === stem(item.id)) === index;
+    })
     .slice(0, 5);
 
   const pendingAssignments = (assignments.data ?? [])

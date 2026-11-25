@@ -7,6 +7,7 @@ import { QuickActionMenu, type QuickCaptureContext } from "@/components/shared/q
 
 export type AppShellUser = {
   name: string;
+  subtitle: string;
   email: string;
   initials: string;
 };

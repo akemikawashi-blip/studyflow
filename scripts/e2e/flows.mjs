@@ -13,6 +13,7 @@ const results = [];
 let failures = 0;
 
 async function step(name, fn) {
+  globalThis.__page?.removeAllListeners("dialog");
   try {
     await fn();
     results.push(`  ✓ ${name}`);
@@ -346,6 +347,53 @@ await step("calendário: criar compromisso, ver em mês/semana/dia/lista, editar
   await page.getByText("Nenhum compromisso neste dia.").waitFor();
 });
 
+await step("importar calendário UENP 2027 com semestres, evitar duplicação, substituir e remover", async () => {
+  await page.goto(`${BASE}/app/import`);
+  await page.getByRole("button", { name: "Carregar UENP 2027" }).click();
+  await page.getByText(/Prévia — 28 de 28 selecionados/).waitFor();
+  await page.locator("li").getByText(/O Anexo II diz 23\/05/).waitFor();
+  await page.getByRole("button", { name: "Importar 28 itens" }).click();
+  await page.getByText("28 itens importados como “UENP 2027”. 2 semestre(s) criado(s).").waitFor();
+  await page.getByRole("button", { name: "Importar 28 itens" }).click();
+  await page.getByText(/Já existem 28 itens de “UENP 2027”/).waitFor();
+  await page.getByLabel("Substituir importação anterior com o mesmo nome").check();
+  await page.getByRole("button", { name: "Importar 28 itens" }).click();
+  await page.getByText(/28 itens importados como “UENP 2027”\.$/).waitFor();
+  await page.goto(`${BASE}/app/calendar?view=day&date=2027-07-15`);
+  await page.getByRole("button", { name: /Recesso acadêmico/ }).waitFor();
+  await page.goto(`${BASE}/app/calendar?view=month&date=2027-03-01`);
+  await page.getByRole("button", { name: /Início das aulas — 1º semestre/ }).first().waitFor();
+  await shot(page, "13-calendario-uenp");
+  await page.goto(`${BASE}/app/courses`);
+  await page.getByRole("heading", { name: /2027\.1/ }).waitFor();
+  await page.getByText(/UENP · 01 de mar\./).first().waitFor();
+});
+
+await step("importar disciplinas da matriz para o semestre 2027.1", async () => {
+  await page.goto(`${BASE}/app/import`);
+  await page.getByRole("button", { name: "Carregar disciplinas da imagem" }).click();
+  await page.locator("#import-semester").selectOption({ label: "2027.1 — UENP" });
+  await page.getByRole("button", { name: "Importar 11 disciplinas" }).click();
+  await page.getByText("11 disciplina(s) importada(s).").waitFor();
+  await page.getByRole("button", { name: "Importar 11 disciplinas" }).click();
+  await page.getByText("Todas as disciplinas já existem neste semestre.").waitFor();
+  await page.goto(`${BASE}/app/courses`);
+  const section = page.getByRole("region", { name: "2027.1" });
+  await section.getByRole("link", { name: "Anatomia Topográfica" }).waitFor();
+  assert(await section.locator("li").count() === 11, "deveria haver 11 disciplinas em 2027.1");
+  assert(await section.getByText(/MED_011 · 216 h/).count() === 1, "código e carga horária ausentes");
+  await shot(page, "14-disciplinas-importadas");
+});
+
+await step("remover calendário importado de uma vez (transferência)", async () => {
+  await page.goto(`${BASE}/app/import`);
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: "Remover UENP 2027" }).click();
+  await page.getByText("28 itens de “UENP 2027” removidos do calendário.").waitFor();
+  await page.goto(`${BASE}/app/calendar?view=day&date=2027-07-15`);
+  await page.getByText("Nenhum compromisso neste dia.").waitFor();
+});
+
 // ---------------------------------------------------------------- isolation
 const otherContext = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "pt-BR" });
 const other = await otherContext.newPage();
@@ -379,14 +427,21 @@ await step("excluir anexo e anotação pede confirmação e remove", async () =>
 // ---------------------------------------------------------------- mobile
 const phone = await browser.newContext({ ...devices["iPhone 13"], locale: "pt-BR" });
 const mobile = await phone.newPage();
+globalThis.__page = mobile;
 await step("iPhone: entrar, painel sem rolagem horizontal, navegação inferior e editor", async () => {
   await mobile.goto(`${BASE}/login`);
   await mobile.fill('input[name="email"]', "ana@atlas.test");
   await mobile.fill('input[name="password"]', "Senha-forte-123");
   await mobile.click('button[type="submit"]');
   await mobile.waitForURL("**/app/dashboard", { timeout: 20_000 });
-  const overflow = await mobile.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  assert(overflow <= 1, `painel com rolagem horizontal de ${overflow}px`);
+  // On phones, content wider than the screen makes the browser zoom out (innerWidth grows), so check both.
+  for (const path of ["/app/dashboard", "/app/courses", "/app/calendar", "/app/materials", "/app/import", "/app/notes", "/app/search?q=rins"]) {
+    await mobile.goto(`${BASE}${path}`);
+    await mobile.waitForLoadState("networkidle");
+    const { width, overflow } = await mobile.evaluate(() => ({ width: window.innerWidth, overflow: document.documentElement.scrollWidth - window.innerWidth }));
+    assert(width <= 391 && overflow <= 1, `${path}: largura ${width}px, rolagem horizontal ${overflow}px`);
+  }
+  await mobile.goto(`${BASE}/app/dashboard`);
   await mobile.getByRole("navigation", { name: "Navegação principal" }).getByRole("link", { name: "Caderno" }).click();
   await mobile.waitForURL("**/app/notes");
   await mobile.getByRole("button", { name: "Nova anotação" }).first().click();
@@ -396,8 +451,8 @@ await step("iPhone: entrar, painel sem rolagem horizontal, navegação inferior 
   await mobile.locator(".atlas-prose").click();
   await mobile.keyboard.type("Formação das três camadas germinativas.");
   await mobile.getByText(/Salvo às/).waitFor({ timeout: 15_000 });
-  const editorOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  assert(editorOverflow <= 1, `editor com rolagem horizontal de ${editorOverflow}px`);
+  const editor = await mobile.evaluate(() => ({ width: window.innerWidth, overflow: document.documentElement.scrollWidth - window.innerWidth }));
+  assert(editor.width <= 391 && editor.overflow <= 1, `editor: largura ${editor.width}px, rolagem ${editor.overflow}px`);
   await shot(mobile, "06-iphone-editor");
   await mobile.goto(`${BASE}/app/dashboard`);
   await mobile.getByText("Minha semana acadêmica").waitFor();

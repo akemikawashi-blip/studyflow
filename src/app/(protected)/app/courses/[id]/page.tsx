@@ -41,7 +41,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 function Block({ title, children, action }: { title: string; children: ReactNode; action?: ReactNode }) {
   return (
-    <section className="rounded-xl border border-outline-variant/70 bg-card p-5 shadow-card">
+    <section className="min-w-0 rounded-xl border border-outline-variant/70 bg-card p-5 shadow-card">
       <div className="mb-3 flex items-start justify-between gap-3">
         <h2 className="font-display text-lg font-semibold">{title}</h2>
         {action}

@@ -11,7 +11,9 @@ export type EditableEvent = {
   eventType: EventType;
   courseId: string | null;
   date: string;
+  endDate: string;
   allDay: boolean;
+  source: string | null;
   startTime: string;
   endTime: string;
   location: string;
@@ -45,7 +47,7 @@ export async function loadCalendar(supabase: ServerClient, userId: string, from:
   const [courses, semesters, events, exams, assignments, timetable, tasks] = await Promise.all([
     supabase.from("courses").select("id,course_name,color,semester_id,archived").eq("user_id", userId).order("sort_order").order("course_name"),
     supabase.from("academic_semesters").select("id,start_date,end_date").eq("user_id", userId),
-    supabase.from("calendar_events").select("*").eq("user_id", userId).gte("start_at", fromIso).lte("start_at", toIso).order("start_at"),
+    supabase.from("calendar_events").select("*").eq("user_id", userId).lte("start_at", toIso).gte("end_at", fromIso).order("start_at"),
     supabase.from("exam_schedules").select("id,title,exam_type,exam_date,start_time,end_time,location,course_id").eq("user_id", userId).gte("exam_date", from).lte("exam_date", to),
     supabase.from("assignments").select("id,title,assignment_type,due_date,due_time,submission_status,course_id").eq("user_id", userId).gte("due_date", from).lte("due_date", to),
     supabase.from("class_timetable_entries").select("id,title,day_of_week,start_time,end_time,location,course_id").eq("user_id", userId).eq("active", true),
@@ -66,18 +68,20 @@ export async function loadCalendar(supabase: ServerClient, userId: string, from:
   const items: CalendarItem[] = [];
 
   for (const event of events.data ?? []) {
-    const date = dateKey(new Date(event.start_at), timeZone);
-    if (date < from || date > to) continue;
+    const firstDay = dateKey(new Date(event.start_at), timeZone);
+    const lastDay = event.all_day ? dateKey(new Date(event.end_at), timeZone) : firstDay;
     const start = event.all_day ? null : timeInZone(event.start_at, timeZone);
     const end = event.all_day ? null : timeInZone(event.end_at, timeZone);
+    const span = lastDay > firstDay ? `${firstDay.slice(8)}/${firstDay.slice(5, 7)} a ${lastDay.slice(8)}/${lastDay.slice(5, 7)}` : null;
+    for (let date = firstDay < from ? from : firstDay; date <= lastDay && date <= to; date = addDays(date, 1)) {
     items.push({
-      key: `event-${event.id}`,
+      key: `event-${event.id}-${date}`,
       date,
       start,
       end: end && end !== start ? end : null,
       title: event.title,
       label: EVENT_LABEL[event.event_type] ?? "Evento",
-      detail: [courseName(event.course_id), event.location].filter(Boolean).join(" · ") || null,
+      detail: [span, courseName(event.course_id), event.location, event.source].filter(Boolean).join(" · ") || null,
       tone: EVENT_TONE[event.event_type] ?? "slate",
       href: null,
       alert: ["deadline", "project_deadline", "assignment"].includes(event.event_type) ? deadlineAlert(date, date >= today) : null,
@@ -88,14 +92,17 @@ export async function loadCalendar(supabase: ServerClient, userId: string, from:
         title: event.title,
         eventType: event.event_type,
         courseId: event.course_id,
-        date,
+        date: firstDay,
+        endDate: lastDay,
         allDay: event.all_day,
+        source: event.source,
         startTime: start ?? "",
         endTime: end && end !== start ? end : "",
         location: event.location ?? "",
         description: event.description ?? "",
       },
     });
+    }
   }
 
   for (const exam of exams.data ?? []) {

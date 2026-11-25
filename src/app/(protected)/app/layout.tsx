@@ -26,7 +26,7 @@ export default async function ProtectedAppLayout({
   ] = await Promise.all([
     supabase
       .from("profiles")
-      .select("full_name")
+      .select("full_name,department,university_name")
       .eq("id", user.id)
       .maybeSingle(),
     supabase
@@ -73,6 +73,7 @@ export default async function ProtectedAppLayout({
           name: fullName,
           email: user.email ?? "",
           initials: initialsFromName(fullName),
+          subtitle: [profile?.department, profile?.university_name].filter(Boolean).join(" · ") || "Organização acadêmica",
         }}
       >
         {children}

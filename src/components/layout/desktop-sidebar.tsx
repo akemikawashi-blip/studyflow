@@ -30,7 +30,7 @@ export function DesktopSidebar({ user }: { user: AppShellUser }) {
         <AtlasMark className="size-9 shrink-0 text-gold" />
         <div className={cn("min-w-0", collapsed && "sr-only")}>
           <p className="truncate font-display text-xl font-semibold leading-tight tracking-tight">Atlas Acadêmico</p>
-          <p className="truncate text-[11px] uppercase tracking-[0.18em] text-sidebar-muted">Medicina</p>
+          <p className="truncate text-[11px] uppercase tracking-[0.18em] text-sidebar-muted">{user.subtitle}</p>
         </div>
       </div>
 

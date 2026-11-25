@@ -29,7 +29,7 @@ const LEGEND: { tone: keyof typeof TONE_CLASSES; label: string }[] = [
   { tone: "plum", label: "Seminários e apresentações" },
   { tone: "teal", label: "Reuniões e eventos" },
   { tone: "sage", label: "Estudo e extracurricular" },
-  { tone: "slate", label: "Tarefas e pessoal" },
+  { tone: "slate", label: "Tarefas, feriados e pessoal" },
 ];
 
 function shiftMonth(key: string, delta: number) {
@@ -94,6 +94,7 @@ export default async function CalendarPage({ searchParams }: { searchParams: Pro
             <Link href={href(view, today)} className="focus-ring rounded-md px-3 py-1.5 text-sm font-medium hover:bg-surface-container">Hoje</Link>
             <Link href={href(view, step[1])} className="focus-ring grid size-8 place-items-center rounded-md hover:bg-surface-container" aria-label="Próximo"><ChevronRight className="size-4" /></Link>
           </div>
+          <Link href="/app/import" className="focus-ring inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high">Importar calendário</Link>
           <NewEventButton date={view === "month" && anchor.slice(0, 7) !== today.slice(0, 7) ? anchor : view === "month" ? today : anchor} courses={data.courses} />
         </div>
       </header>

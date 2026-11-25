@@ -20,6 +20,7 @@ const eventSchema = z
     eventType: z.enum(eventTypes),
     courseId: z.string().uuid().nullable(),
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Informe a data."),
+    endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable(),
     allDay: z.boolean(),
     startTime: time.nullable(),
     endTime: time.nullable(),
@@ -28,6 +29,9 @@ const eventSchema = z
   })
   .superRefine((value, ctx) => {
     if (!value.allDay && !value.startTime) ctx.addIssue({ code: "custom", path: ["startTime"], message: "Informe o horário ou marque “dia inteiro”." });
+    if (value.allDay && value.endDate && value.endDate < value.date) {
+      ctx.addIssue({ code: "custom", path: ["endDate"], message: "A data final deve ser igual ou posterior à inicial." });
+    }
     if (!value.allDay && value.startTime && value.endTime && value.endTime < value.startTime) {
       ctx.addIssue({ code: "custom", path: ["endTime"], message: "O término deve ser depois do início." });
     }
@@ -46,6 +50,7 @@ export async function saveEventAction(_state: ActionState, formData: FormData): 
     eventType: String(formData.get("eventType") ?? ""),
     courseId: String(formData.get("courseId") ?? "") || null,
     date: String(formData.get("date") ?? ""),
+    endDate: String(formData.get("endDate") ?? "") || null,
     allDay: formData.get("allDay") === "on",
     startTime: String(formData.get("startTime") ?? "") || null,
     endTime: String(formData.get("endTime") ?? "") || null,
@@ -65,7 +70,7 @@ export async function saveEventAction(_state: ActionState, formData: FormData): 
 
   const timeZone = await getTimeZone(supabase, user.id);
   const startAt = zonedToIso(data.date, data.allDay ? "00:00" : data.startTime!, timeZone);
-  const endAt = data.allDay ? zonedToIso(data.date, "23:59", timeZone) : zonedToIso(data.date, data.endTime ?? data.startTime!, timeZone);
+  const endAt = data.allDay ? zonedToIso(data.endDate ?? data.date, "23:59", timeZone) : zonedToIso(data.date, data.endTime ?? data.startTime!, timeZone);
 
   const values = {
     title: data.title,

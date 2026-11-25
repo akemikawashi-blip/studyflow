@@ -29,14 +29,16 @@ function count(map: Map<string, number>, id: string) {
 export default async function CoursesPage() {
   const user = await requireUser();
   const supabase = await createClient();
-  const [coursesResult, semestersResult, lessons, notes, materials, exams] = await Promise.all([
+  const [coursesResult, semestersResult, lessons, notes, materials, exams, profile] = await Promise.all([
     supabase.from("courses").select("*").eq("user_id", user.id).order("sort_order").order("course_name"),
-    supabase.from("academic_semesters").select("id,semester_name,academic_year,start_date,end_date,is_current,gpa,sort_order,created_at").eq("user_id", user.id),
+    supabase.from("academic_semesters").select("id,semester_name,academic_year,institution,start_date,end_date,is_current,gpa,sort_order,created_at").eq("user_id", user.id),
     supabase.from("lessons").select("course_id").eq("user_id", user.id),
     supabase.from("notes").select("course_id").eq("user_id", user.id),
     supabase.from("materials").select("course_id").eq("user_id", user.id),
     supabase.from("exam_schedules").select("course_id,exam_date").eq("user_id", user.id),
+    supabase.from("profiles").select("university_name").eq("id", user.id).maybeSingle(),
   ]);
+  const defaultInstitution = profile.data?.university_name ?? null;
 
   const error = coursesResult.error || semestersResult.error;
   const courses = coursesResult.data ?? [];
@@ -118,7 +120,8 @@ export default async function CoursesPage() {
         description="Cada disciplina reúne suas aulas, anotações, materiais, provas e trabalhos."
         actions={
           <>
-            <SemesterFormDialog />
+            <Link href="/app/import" className="focus-ring inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high">Importar grade</Link>
+            <SemesterFormDialog defaultInstitution={defaultInstitution} />
             <CourseFormDialog semesters={semesters} />
           </>
         }
@@ -134,7 +137,7 @@ export default async function CoursesPage() {
           <h2 className="font-display text-2xl font-semibold">Nenhuma disciplina ainda</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">Crie o semestre atual e cadastre as disciplinas que você está cursando.</p>
           <div className="mt-5 flex justify-center gap-2">
-            <SemesterFormDialog label="Semestre" />
+            <SemesterFormDialog label="Semestre" defaultInstitution={defaultInstitution} />
             <CourseFormDialog semesters={semesters} />
           </div>
         </div>
@@ -149,9 +152,9 @@ export default async function CoursesPage() {
                       {semester?.semester_name ?? "Sem semestre"}
                       {semester?.is_current ? <span className="rounded bg-secondary-container px-1.5 py-0.5 font-sans text-[10px] font-semibold uppercase tracking-wider text-on-secondary-container">Atual</span> : null}
                     </h2>
-                    {semester && (semester.start_date || semester.academic_year) ? (
+                    {semester && (semester.start_date || semester.academic_year || semester.institution) ? (
                       <p className="text-xs text-muted-foreground">
-                        {[semester.academic_year, semester.start_date && semester.end_date ? `${formatKey(semester.start_date, { day: "2-digit", month: "short" })} – ${formatKey(semester.end_date, { day: "2-digit", month: "short", year: "numeric" })}` : null].filter(Boolean).join(" · ")}
+                        {[semester.institution, semester.academic_year, semester.start_date && semester.end_date ? `${formatKey(semester.start_date, { day: "2-digit", month: "short" })} – ${formatKey(semester.end_date, { day: "2-digit", month: "short", year: "numeric" })}` : null].filter(Boolean).join(" · ")}
                       </p>
                     ) : null}
                   </div>

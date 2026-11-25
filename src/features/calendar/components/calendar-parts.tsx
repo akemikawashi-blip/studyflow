@@ -67,6 +67,13 @@ function EventForm({ event, date, courses, onDone }: { event?: EditableEvent; da
           <input type="checkbox" name="allDay" checked={allDay} onChange={(change) => setAllDay(change.target.checked)} className="size-4 accent-[var(--primary)]" />
           Dia inteiro
         </label>
+        {allDay ? (
+          <div>
+            <label htmlFor={`event-end-date-${suffix}`} className="mb-1 block text-sm font-medium">Até (opcional, para vários dias)</label>
+            <input id={`event-end-date-${suffix}`} name="endDate" type="date" defaultValue={event && event.endDate !== event.date ? event.endDate : ""} className={inputClass} />
+            <FieldError state={state} field="endDate" />
+          </div>
+        ) : null}
         <div>
           <label htmlFor={`event-location-${suffix}`} className="mb-1 block text-sm font-medium">Local</label>
           <input id={`event-location-${suffix}`} name="location" maxLength={200} defaultValue={event?.location ?? ""} className={inputClass} />

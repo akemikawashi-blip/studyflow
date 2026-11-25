@@ -12,7 +12,7 @@ import { useFormAction } from "@/lib/forms/use-form-action";
 import type { Database } from "@/types/database.generated";
 
 type Course = Database["public"]["Tables"]["courses"]["Row"];
-type Semester = Pick<Database["public"]["Tables"]["academic_semesters"]["Row"], "id" | "semester_name" | "academic_year" | "start_date" | "end_date" | "is_current">;
+type Semester = Pick<Database["public"]["Tables"]["academic_semesters"]["Row"], "id" | "semester_name" | "academic_year" | "start_date" | "end_date" | "is_current"> & { institution?: string | null };
 
 function Field({ id, label, children, hint }: { id: string; label: string; children: ReactNode; hint?: string }) {
   return (
@@ -118,7 +118,7 @@ export function CourseFormDialog({ course, semesters, trigger, variant }: { cour
   );
 }
 
-function SemesterForm({ semester, onDone }: { semester?: Semester; onDone: () => void }) {
+function SemesterForm({ semester, onDone, defaultInstitution }: { semester?: Semester; onDone: () => void; defaultInstitution?: string | null }) {
   const { state, pending, onSubmit } = useFormAction(saveSemesterAction, onDone);
   const suffix = semester?.id ?? "new";
   return (
@@ -133,6 +133,11 @@ function SemesterForm({ semester, onDone }: { semester?: Semester; onDone: () =>
         <Field id={`semester-year-${suffix}`} label="Ano letivo (opcional)">
           <input id={`semester-year-${suffix}`} name="academicYear" maxLength={40} defaultValue={semester?.academic_year ?? ""} placeholder="Ex.: 2026.2" className={inputClass} />
         </Field>
+        <div className="sm:col-span-2">
+          <Field id={`semester-institution-${suffix}`} label="Instituição" hint="Guarda de qual universidade é este semestre — útil em caso de transferência.">
+            <input id={`semester-institution-${suffix}`} name="institution" maxLength={160} defaultValue={semester?.institution ?? defaultInstitution ?? ""} className={inputClass} />
+          </Field>
+        </div>
         <Field id={`semester-start-${suffix}`} label="Início">
           <input id={`semester-start-${suffix}`} name="startDate" type="date" defaultValue={semester?.start_date ?? ""} className={inputClass} />
         </Field>
@@ -153,7 +158,7 @@ function SemesterForm({ semester, onDone }: { semester?: Semester; onDone: () =>
   );
 }
 
-export function SemesterFormDialog({ semester, variant = "outline", label = "Novo semestre" }: { semester?: Semester; variant?: TriggerVariant; label?: string }) {
+export function SemesterFormDialog({ semester, variant = "outline", label = "Novo semestre", defaultInstitution }: { semester?: Semester; variant?: TriggerVariant; label?: string; defaultInstitution?: string | null }) {
   return (
     <Dialog
       eyebrow="Semestres"
@@ -166,7 +171,7 @@ export function SemesterFormDialog({ semester, variant = "outline", label = "Nov
         )
       }
     >
-      {(close) => <SemesterForm semester={semester} onDone={close} />}
+      {(close) => <SemesterForm semester={semester} onDone={close} defaultInstitution={defaultInstitution} />}
     </Dialog>
   );
 }

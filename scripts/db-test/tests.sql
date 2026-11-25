@@ -209,3 +209,24 @@ begin
 end $$;
 reset role;
 select 'ok' as atlas_stage2_tests;
+
+-- Instituição e importação de calendário
+set role authenticated;
+do $$ begin perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false); end $$;
+insert into public.academic_semesters (user_id, semester_name, institution) values ('11111111-1111-1111-1111-111111111111', '2027.1', 'UENP');
+insert into public.calendar_events (user_id, title, start_at, end_at, all_day, event_type, source)
+values ('11111111-1111-1111-1111-111111111111', 'Recesso acadêmico', '2027-07-05T03:00:00Z', '2027-07-25T02:59:00Z', true, 'holiday', 'UENP 2027');
+do $$
+declare n integer;
+begin
+  delete from public.calendar_events where source = 'UENP 2027';
+  get diagnostics n = row_count;
+  if n <> 1 then raise exception 'bulk delete by source failed'; end if;
+  begin
+    insert into public.calendar_events (user_id, title, start_at, end_at, source) values ('11111111-1111-1111-1111-111111111111', 'x', now(), now(), '');
+    raise exception 'blank source must fail';
+  exception when check_violation then null;
+  end;
+end $$;
+reset role;
+select 'ok' as atlas_import_tests;

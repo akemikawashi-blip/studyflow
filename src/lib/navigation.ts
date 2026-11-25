@@ -9,6 +9,7 @@ import {
   Shapes,
   CircleDollarSign,
   Download,
+  FileInput,
   Gauge,
   GraduationCap,
   Search,
@@ -31,6 +32,7 @@ const tasks: NavigationItem = { label: "Tarefas", href: "/app/tasks", icon: Squa
 const study: NavigationItem = { label: "Estudos", href: "/app/study", icon: GraduationCap };
 const performance: NavigationItem = { label: "Desempenho semestral", href: "/app/academic", icon: Award };
 const notifications: NavigationItem = { label: "Notificações", href: "/app/notifications", icon: Bell };
+const importData: NavigationItem = { label: "Importar", href: "/app/import", icon: FileInput };
 const exportData: NavigationItem = { label: "Exportar e PDF", href: "/app/export", icon: Download };
 const settings: NavigationItem = { label: "Configurações", href: "/app/settings", icon: Settings };
 const finance: NavigationItem = { label: "Finanças", href: "/app/finance", icon: CircleDollarSign };
@@ -40,7 +42,7 @@ export const navigationSections: NavigationSection[] = [
   { title: "Visão geral", items: [dashboard, search] },
   { title: "Acadêmico", items: [notebook, courses, calendar, materials, planner, schedule, tasks, study, performance] },
   { title: "Pessoal", items: [finance, skills] },
-  { title: "Sistema", items: [notifications, exportData, settings] },
+  { title: "Sistema", items: [notifications, importData, exportData, settings] },
 ];
 
 export const desktopNavigation: NavigationItem[] = navigationSections.flatMap((section) => section.items);
