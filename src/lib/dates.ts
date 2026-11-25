@@ -89,3 +89,36 @@ export function isValidTimeZone(timeZone: string | null | undefined): timeZone i
 export function shortTime(value: string | null | undefined) {
   return value ? value.slice(0, 5) : "";
 }
+
+/** Offset (ms) of `timeZone` from UTC at the given instant. */
+function zoneOffset(instant: number, timeZone: string) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(new Date(instant));
+  const get = (type: string) => Number(parts.find((part) => part.type === type)?.value ?? 0);
+  const asUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
+  return asUtc - Math.floor(instant / 1000) * 1000;
+}
+
+/** Converts a wall-clock date (YYYY-MM-DD) and time (HH:MM) in `timeZone` to an ISO instant. */
+export function zonedToIso(dateKeyValue: string, time: string, timeZone: string) {
+  const [hours, minutes] = (time || "00:00").split(":").map(Number);
+  const naive = Date.parse(`${dateKeyValue}T00:00:00Z`) + (hours * 60 + minutes) * 60_000;
+  let instant = naive - zoneOffset(naive, timeZone);
+  instant = naive - zoneOffset(instant, timeZone);
+  return new Date(instant).toISOString();
+}
+
+/** HH:MM of an instant as seen in `timeZone`. */
+export function timeInZone(value: string | Date, timeZone: string) {
+  return new Intl.DateTimeFormat("en-GB", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(
+    typeof value === "string" ? new Date(value) : value,
+  );
+}

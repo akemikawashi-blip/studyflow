@@ -137,7 +137,7 @@ export async function loadDashboard(supabase: ServerClient, userId: string) {
       time: event.all_day ? null : new Intl.DateTimeFormat("pt-BR", { timeZone, hour: "2-digit", minute: "2-digit" }).format(new Date(event.start_at)),
       title: event.title,
       detail: [courseName(event.course_id), event.location].filter(Boolean).join(" · ") || null,
-      href: "/app/planner",
+      href: `/app/calendar?view=day&date=${day}`,
       color: courseColor(event.course_id),
     });
   }

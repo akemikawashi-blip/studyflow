@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button";
 export default function AppError({ reset }: { reset: () => void }) {
   return (
     <PageContainer className="max-w-3xl">
-      <ErrorState description="Atlas Acadêmico could not render this workspace. Retry the page to continue." />
+      <ErrorState description="Não foi possível exibir esta página. Seus dados estão salvos — tente novamente." />
       <Button className="mt-4" onClick={reset}>
         <RotateCcw className="size-4" aria-hidden="true" />
-        Try again
+        Tentar novamente
       </Button>
     </PageContainer>
   );

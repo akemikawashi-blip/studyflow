@@ -39,10 +39,16 @@ export NEXT_PUBLIC_SUPABASE_URL="http://127.0.0.1:$API_PORT"
 export NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="sb_publishable_atlas_e2e_local"
 export NEXT_PUBLIC_SITE_URL="http://127.0.0.1:$APP_PORT"
 cd "$ROOT"
-if [ "${SKIP_BUILD:-0}" != "1" ]; then npx next build > "$WORK/build.log" 2>&1 || { tail -40 "$WORK/build.log"; exit 1; }; fi
-setsid npx next start -p "$APP_PORT" -H 127.0.0.1 > "$WORK/next.log" 2>&1 &
-PIDS+=($!)
-for _ in $(seq 1 60); do curl -sf "http://127.0.0.1:$APP_PORT/login" >/dev/null && break; sleep 1; done
+if [ -n "${E2E_DEV:-}" ]; then
+  setsid npx next dev -p "$APP_PORT" -H 127.0.0.1 > "$WORK/next.log" 2>&1 &
+  PIDS+=($!)
+elif [ "${SKIP_BUILD:-0}" != "1" ]; then npx next build > "$WORK/build.log" 2>&1 || { tail -40 "$WORK/build.log"; exit 1; }; fi
+if [ -z "${E2E_DEV:-}" ]; then
+  setsid npx next start -p "$APP_PORT" -H 127.0.0.1 > "$WORK/next.log" 2>&1 &
+  PIDS+=($!)
+fi
+for _ in $(seq 1 180); do curl -sf "http://127.0.0.1:$APP_PORT/login" >/dev/null && break; sleep 1; done
 echo "→ app ready"
 
-APP_URL="http://127.0.0.1:$APP_PORT" node "$ROOT/scripts/e2e/flows.mjs" || { echo "--- next.log"; tail -40 "$WORK/next.log"; echo "--- api.log"; tail -20 "$WORK/api.log"; exit 1; }
+trap 'if [ -n "${E2E_TRACE:-}" ]; then cp "$WORK/api.log" "${E2E_TRACE}"; cp "$WORK/next.log" "${E2E_TRACE}.next"; fi; cleanup' EXIT
+APP_URL="http://127.0.0.1:$APP_PORT" node "${FLOWS_FILE:-$ROOT/scripts/e2e/flows.mjs}" || { echo "--- next.log"; tail -40 "$WORK/next.log"; echo "--- api.log"; tail -20 "$WORK/api.log"; exit 1; }

@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarClock, CalendarPlus, GraduationCap, Plus, Search, SquareCheckBig, X } from "lucide-react";
+import { CalendarClock, CalendarPlus, CalendarRange, GraduationCap, Library, Plus, Search, SquareCheckBig, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { NewNoteForm, type NoteCourseOption } from "@/features/notes/components/new-note-dialog";
 
 const quickLinks = [
+  { label: "Compromisso", href: "/app/calendar", icon: CalendarRange },
+  { label: "Enviar material", href: "/app/materials", icon: Library },
   { label: "Nova tarefa", href: "/app/tasks", icon: SquareCheckBig },
   { label: "Trabalho ou prazo", href: "/app/planner", icon: CalendarPlus },
   { label: "Prova ou horário", href: "/app/schedule", icon: CalendarClock },

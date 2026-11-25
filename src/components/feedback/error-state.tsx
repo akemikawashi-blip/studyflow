@@ -8,7 +8,7 @@ export type ErrorStateProps = {
 };
 
 export function ErrorState({
-  title = "Something went wrong",
+  title = "Algo deu errado",
   description = "The page could not be loaded. Please try again.",
 }: ErrorStateProps) {
   return (

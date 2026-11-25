@@ -15,15 +15,18 @@ Os dados ficam no Supabase da própria usuária: sincronizam entre celular, tabl
 - **Visualização do caderno** por disciplina, data, assunto, professor ou palavra-chave, com filtros e busca no texto completo.
 - **Arquivos** (PDF, slides, fotos, documentos — até 50 MB) em bucket **privado**; cada usuária só acessa a própria pasta, e os links passam por `/api/files/…`, que confere a sessão antes de gerar uma URL assinada de 60 segundos.
 - **Busca global** sem diferenciar acentos/maiúsculas em anotações, aulas, disciplinas, materiais, provas, trabalhos, tarefas, eventos, estudos, habilidades e finanças, com trecho destacado.
+- **Disciplinas** (Etapa 2): semestres (com semestre atual), criar/editar/arquivar/restaurar/reordenar/excluir disciplinas; página própria de cada disciplina com horários, próximas avaliações, conteúdo programático, livros e referências, dificuldades, conteúdos a revisar, histórico de aulas, materiais, avaliações com nota e trabalhos.
+- **Biblioteca de materiais** (Etapa 2): envio de vários arquivos, links e referências; vínculo com disciplina, aula e avaliação; filtros por categoria, disciplina, tipo e data; visualização de PDF e imagens; edição e exclusão.
+- **Calendário** (Etapa 2): visões mensal, semanal, diária e lista; compromissos com categoria (aula, prova, seminário, entrega, apresentação, reunião, evento universitário, prazo de projeto, atividade extracurricular…), disciplina, horário e descrição; reúne também provas, trabalhos, tarefas e a grade semanal de aulas (respeitando as datas do semestre); alertas de atraso e de prazo em até 3 dias.
 - Módulos herdados continuam funcionando (Disciplinas e prazos, Horários e provas, Tarefas, Estudos, Desempenho semestral, Finanças, Habilidades, Notificações, Exportação, Configurações). Eles ainda têm textos em inglês e serão adaptados nas próximas etapas.
 
-## Atualizar o banco (obrigatório para a Etapa 1)
+## Atualizar o banco (obrigatório)
 
 - **Projeto Supabase já existente**: abra *SQL Editor*, cole todo o `supabase/atlas-upgrade.sql` e clique em *Run*. É aditivo e pode ser executado mais de uma vez; não apaga nem duplica dados.
 - **Projeto novo**: rode `supabase/phase2-complete.sql` (já inclui a atualização).
 - Pela CLI: `npm run db:push`.
 
-A atualização cria as tabelas `lessons` e `materials`, acrescenta colunas ao caderno (`notes`) e às disciplinas (`courses.archived`, `courses.sort_order`), cria o bucket privado `atlas-files` com políticas por usuária e a função de busca `atlas_search`. Novas contas passam a usar fuso `America/Sao_Paulo` e moeda BRL; contas existentes mantêm suas preferências (ajuste o fuso em Configurações se o painel avisar).
+O arquivo é cumulativo (Etapas 1 e 2). A Etapa 1 cria as tabelas `lessons` e `materials`, acrescenta colunas ao caderno (`notes`) e às disciplinas (`courses.archived`, `courses.sort_order`), cria o bucket privado `atlas-files` com políticas por usuária e a função de busca `atlas_search`. A Etapa 2 transforma `academic_semesters` em semestres (datas e semestre atual; a nota GPA passa a ser opcional), liga disciplinas a semestres, acrescenta os campos da disciplina, liga materiais a provas e adiciona as novas categorias de compromisso. Novas contas passam a usar fuso `America/Sao_Paulo` e moeda BRL; contas existentes mantêm suas preferências (ajuste o fuso em Configurações se o painel avisar).
 
 ## Testes
 

@@ -18,6 +18,7 @@ export type UploadTarget = {
   noteId?: string | null;
   lessonId?: string | null;
   courseId?: string | null;
+  examId?: string | null;
   category?: MaterialCategory;
   folder: string;
 };
@@ -58,6 +59,7 @@ export async function uploadMaterial(file: File, target: UploadTarget): Promise<
     noteId: target.noteId ?? null,
     lessonId: target.lessonId ?? null,
     courseId: target.courseId ?? null,
+    examId: target.examId ?? null,
   });
   if (result.status === "error") throw new Error(result.message);
   return result.material;

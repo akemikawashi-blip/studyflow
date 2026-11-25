@@ -167,3 +167,45 @@ begin
 end $$;
 reset role;
 select 'ok' as atlas_search_legacy_tests;
+
+-- Etapa 2: semesters, course links, exam materials, new event types
+set role authenticated;
+do $$ begin perform set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false); end $$;
+insert into public.academic_semesters (id, user_id, semester_name, start_date, end_date, is_current)
+values ('aaaaaaaa-0000-0000-0000-0000000000a1', '11111111-1111-1111-1111-111111111111', '2026.2', '2026-08-01', '2026-12-15', true);
+update public.courses set semester_id = 'aaaaaaaa-0000-0000-0000-0000000000a1', description = 'Ementa' where id = 'aaaaaaaa-0000-0000-0000-000000000001';
+do $$
+begin
+  begin
+    insert into public.academic_semesters (user_id, semester_name, is_current) values ('11111111-1111-1111-1111-111111111111', '2027.1', true);
+    raise exception 'only one current semester per user';
+  exception when unique_violation then null;
+  end;
+  begin
+    insert into public.academic_semesters (user_id, semester_name, start_date, end_date) values ('11111111-1111-1111-1111-111111111111', 'x', '2026-02-01', '2026-01-01');
+    raise exception 'end before start must fail';
+  exception when check_violation then null;
+  end;
+end $$;
+insert into public.calendar_events (user_id, title, start_at, end_at, event_type)
+values ('11111111-1111-1111-1111-111111111111', 'Seminário de embriologia', now(), now(), 'seminar');
+insert into public.exam_schedules (id, user_id, title, exam_date) values ('aaaaaaaa-0000-0000-0000-0000000000e1', '11111111-1111-1111-1111-111111111111', 'P1 Anatomia', '2026-12-01');
+insert into public.materials (user_id, exam_id, title, external_url, category) values ('11111111-1111-1111-1111-111111111111', 'aaaaaaaa-0000-0000-0000-0000000000e1', 'Gabarito', 'https://example.org/g', 'reference');
+delete from public.academic_semesters where id = 'aaaaaaaa-0000-0000-0000-0000000000a1';
+do $$
+begin
+  if (select semester_id from public.courses where id = 'aaaaaaaa-0000-0000-0000-000000000001') is not null then
+    raise exception 'deleting a semester should only unlink its courses';
+  end if;
+end $$;
+do $$ begin perform set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', false); end $$;
+do $$
+begin
+  begin
+    insert into public.materials (user_id, exam_id, title, external_url) values ('22222222-2222-2222-2222-222222222222', 'aaaaaaaa-0000-0000-0000-0000000000e1', 'x', 'https://x.org');
+    raise exception 'cross-account exam link must fail';
+  exception when foreign_key_violation then null;
+  end;
+end $$;
+reset role;
+select 'ok' as atlas_stage2_tests;

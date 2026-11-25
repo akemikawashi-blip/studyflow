@@ -124,6 +124,11 @@ export type Database = {
           current_grade: string | null;
           archived: boolean;
           sort_order: number;
+          semester_id: string | null;
+          description: string | null;
+          references_text: string | null;
+          difficulties: string | null;
+          review_topics: string | null;
         },
         {
           id?: string;
@@ -138,6 +143,11 @@ export type Database = {
           current_grade?: string | null;
           archived?: boolean;
           sort_order?: number;
+          semester_id?: string | null;
+          description?: string | null;
+          references_text?: string | null;
+          difficulties?: string | null;
+          review_topics?: string | null;
           created_at?: string;
           updated_at?: string;
         }
@@ -734,6 +744,7 @@ export type Database = {
           size_bytes: number | null;
           external_url: string | null;
           tags: string[];
+          exam_id: string | null;
         },
         {
           id?: string;
@@ -750,6 +761,7 @@ export type Database = {
           size_bytes?: number | null;
           external_url?: string | null;
           tags?: string[];
+          exam_id?: string | null;
           created_at?: string;
           updated_at?: string;
         }
@@ -836,20 +848,26 @@ export type Database = {
         BaseOwnedRow & {
           semester_name: string;
           academic_year: string | null;
-          gpa: number;
+          gpa: number | null;
           total_credits: number;
           notes: string | null;
           sort_order: number;
+          start_date: string | null;
+          end_date: string | null;
+          is_current: boolean;
         },
         {
           id?: string;
           user_id: string;
           semester_name: string;
           academic_year?: string | null;
-          gpa: number;
+          gpa?: number | null;
           total_credits?: number;
           notes?: string | null;
           sort_order?: number;
+          start_date?: string | null;
+          end_date?: string | null;
+          is_current?: boolean;
           created_at?: string;
           updated_at?: string;
         }
@@ -940,7 +958,13 @@ export type Database = {
         | "exam"
         | "meeting"
         | "personal_event"
-        | "task";
+        | "task"
+        | "seminar"
+        | "presentation"
+        | "deadline"
+        | "university_event"
+        | "project_deadline"
+        | "extracurricular";
       syllabus_status: "not_started" | "in_progress" | "completed";
       study_session_type:
         | "reading"

@@ -11,6 +11,7 @@ export default async function AcademicPage() {
     .from("academic_semesters")
     .select("*")
     .eq("user_id", user.id)
+    .not("gpa", "is", null)
     .order("sort_order")
     .order("created_at");
 

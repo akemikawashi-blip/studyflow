@@ -140,7 +140,7 @@ export default async function DashboardPage() {
             <p className="font-display text-lg font-semibold">Comece cadastrando suas disciplinas</p>
             <p className="text-sm text-on-surface-variant">Com elas, aulas, anotações, provas e prazos ficam organizados por matéria.</p>
           </div>
-          <Link href="/app/planner" className="focus-ring inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground">Cadastrar disciplinas</Link>
+          <Link href="/app/courses" className="focus-ring inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground">Cadastrar disciplinas</Link>
         </div>
       ) : null}
 
@@ -157,7 +157,7 @@ export default async function DashboardPage() {
       </section>
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-        <Panel eyebrow={weekRange} title="Minha semana acadêmica" action={<PanelLink href="/app/schedule">Horários</PanelLink>}>
+        <Panel eyebrow={weekRange} title="Minha semana acadêmica" action={<PanelLink href="/app/calendar?view=week">Calendário</PanelLink>}>
           <div className="grid gap-px overflow-hidden rounded-lg border border-outline-variant/70 bg-outline-variant/70 md:grid-cols-7">
             {data.weekAgenda.map(({ day, items }) => {
               const isToday = day === today;
@@ -255,7 +255,7 @@ export default async function DashboardPage() {
           )}
         </Panel>
 
-        <Panel eyebrow={formatKey(today, { month: "long", year: "numeric" })} title="Calendário" className="lg:col-span-2 xl:col-span-1">
+        <Panel eyebrow={formatKey(today, { month: "long", year: "numeric" })} title="Calendário" action={<PanelLink href="/app/calendar">Abrir</PanelLink>} className="lg:col-span-2 xl:col-span-1">
           <div className="grid grid-cols-7 gap-y-1 text-center text-[11px] text-muted-foreground">
             {["S", "T", "Q", "Q", "S", "S", "D"].map((label, index) => <span key={index} className="pb-1 font-semibold">{label}</span>)}
             {data.month.map((day) => {
@@ -306,14 +306,14 @@ export default async function DashboardPage() {
           )}
         </Panel>
 
-        <Panel eyebrow="Em andamento" title="Disciplinas" action={<PanelLink href="/app/planner">Gerenciar</PanelLink>}>
+        <Panel eyebrow="Em andamento" title="Disciplinas" action={<PanelLink href="/app/courses">Gerenciar</PanelLink>}>
           {data.activeCourses.length === 0 ? (
             <Empty>Nenhuma disciplina ativa.</Empty>
           ) : (
             <ul className="flex flex-col gap-1">
               {data.activeCourses.slice(0, 8).map((course) => (
                 <li key={course.id}>
-                  <Link href={`/app/notes?course=${course.id}&view=date`} className="focus-ring flex items-center gap-3 rounded-lg p-2 hover:bg-surface-container">
+                  <Link href={`/app/courses/${course.id}`} className="focus-ring flex items-center gap-3 rounded-lg p-2 hover:bg-surface-container">
                     <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: course.color }} aria-hidden="true" />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-sm font-semibold">{course.course_name}</span>

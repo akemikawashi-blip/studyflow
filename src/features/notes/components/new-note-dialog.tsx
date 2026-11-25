@@ -59,7 +59,7 @@ export function NewNoteForm({
           </select>
           {courses.length === 0 ? (
             <p className="mt-1 text-xs text-muted-foreground">
-              Nenhuma disciplina cadastrada. <Link href="/app/planner" className="font-medium text-primary underline">Cadastrar disciplinas</Link>
+              Nenhuma disciplina cadastrada. <Link href="/app/courses" className="font-medium text-primary underline">Cadastrar disciplinas</Link>
             </p>
           ) : null}
         </div>

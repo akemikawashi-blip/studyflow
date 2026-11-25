@@ -346,6 +346,8 @@ http
       });
     }
     const url = new URL(req.url, PUBLIC_URL);
+    const started = Date.now();
+    if (process.env.E2E_TRACE) res.on("finish", () => console.log(`${new Date().toISOString().slice(11, 23)} ${req.method} ${url.pathname}${url.search.slice(0, 80)} ${res.statusCode} ${Date.now() - started}ms`));
     try {
       if (url.pathname.startsWith("/auth/v1")) return await handleAuth(req, res, url.pathname.slice(8), url);
       if (url.pathname.startsWith("/rest/v1")) return await handleRest(req, res, url.pathname.slice(8), url, bearer(req));

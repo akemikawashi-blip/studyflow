@@ -45,7 +45,6 @@ const STATIC_HREF: Partial<Record<AtlasSearchKind, string>> = {
   exam: "/app/schedule",
   assignment: "/app/planner",
   task: "/app/tasks",
-  event: "/app/planner",
   study: "/app/study",
   skill: "/app/skills",
   finance: "/app/finance",
@@ -112,13 +111,15 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
         return noteId ? { href: `/app/notes/${noteId}` } : null;
       }
       case "course":
-        return { href: `/app/notes?course=${row.id}&view=date` };
+        return { href: `/app/courses/${row.id}` };
       case "material": {
         const material = materialById.get(row.id);
         if (material?.storage_path) return { href: fileUrl(material.storage_path), external: true };
         if (material?.external_url) return { href: material.external_url, external: true };
         return row.parent_id ? { href: `/app/notes/${row.parent_id}` } : null;
       }
+      case "event":
+        return { href: `/app/calendar?view=day&date=${row.occurred_on ?? ""}` };
       default:
         return STATIC_HREF[row.kind] ? { href: STATIC_HREF[row.kind]! } : null;
     }

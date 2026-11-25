@@ -201,6 +201,151 @@ await step("painel mostra a aula recente e a disciplina com contagem", async () 
   await shot(page, "05-painel");
 });
 
+// ---------------------------------------------------------------- etapa 2
+await step("semestres e disciplinas: criar, editar, reordenar, arquivar", async () => {
+  await page.goto(`${BASE}/app/courses`);
+  await page.getByRole("button", { name: "Novo semestre" }).first().click();
+  let dialog = page.getByRole("dialog", { name: "Novo semestre" });
+  await dialog.locator('input[name="name"]').fill("3º período");
+  await dialog.locator('input[name="startDate"]').fill("2026-08-01");
+  await dialog.locator('input[name="endDate"]').fill("2026-12-20");
+  await dialog.locator('input[name="isCurrent"]').check();
+  await dialog.getByRole("button", { name: "Criar semestre" }).click();
+  await page.getByRole("heading", { name: /3º período/ }).waitFor();
+
+  await page.getByRole("button", { name: "Nova disciplina" }).first().click();
+  dialog = page.getByRole("dialog", { name: "Nova disciplina" });
+  await dialog.locator('input[name="courseName"]').fill("Embriologia");
+  await dialog.locator('input[name="instructorName"]').fill("Profa. Marta Reis");
+  await dialog.locator('textarea[name="description"]').fill("Gametogênese, fecundação, gastrulação.");
+  await dialog.getByRole("button", { name: "Criar disciplina" }).click();
+  await page.getByRole("link", { name: "Embriologia", exact: true }).waitFor();
+  const section = page.getByRole("region", { name: "3º período" });
+  assert(await section.getByRole("link", { name: "Embriologia", exact: true }).count() === 1, "nova disciplina deveria ir para o semestre atual");
+
+  // Anatomia (sem semestre) → editar para o semestre atual
+  await page.getByRole("button", { name: "Editar Anatomia Humana" }).click();
+  dialog = page.getByRole("dialog", { name: "Editar Anatomia Humana" });
+  await dialog.locator('select[name="semesterId"]').selectOption({ label: "3º período (atual)" });
+  await dialog.getByRole("button", { name: "Salvar alterações" }).click();
+  await section.getByRole("link", { name: "Anatomia Humana" }).waitFor();
+  const order = async () => section.locator("li a.font-display").allTextContents();
+  const before = await order();
+  await section.getByRole("button", { name: `Mover ${before[1]} para cima` }).click();
+  await page.waitForFunction((expected) => {
+    const items = [...document.querySelectorAll('section[aria-label="3º período"] li a.font-display')].map((a) => a.textContent);
+    return items[0] === expected;
+  }, before[1]);
+
+  await page.getByRole("button", { name: "Arquivar Embriologia" }).click();
+  await page.getByText("Arquivadas (1)").waitFor();
+  await page.getByText("Arquivadas (1)").click();
+  await page.getByRole("button", { name: "Restaurar Embriologia" }).click();
+  await page.getByText("Arquivadas (1)").waitFor({ state: "detached" });
+  await shot(page, "08-disciplinas");
+});
+
+await step("página da disciplina: visão geral, aulas e abas", async () => {
+  await page.goto(`${BASE}/app/courses`);
+  await page.getByRole("link", { name: "Anatomia Humana" }).click();
+  await page.waitForURL(/\/app\/courses\/[0-9a-f-]{36}$/);
+  await page.getByRole("heading", { level: 1, name: "Anatomia Humana" }).waitFor();
+  await page.getByRole("heading", { name: "Conteúdo programático" }).waitFor();
+  await page.getByRole("link", { name: /Aulas e anotações/ }).click();
+  await page.getByRole("link", { name: /Sistema urinário — rins/ }).waitFor();
+  await page.getByRole("link", { name: /Avaliações e notas/ }).click();
+  await page.getByRole("heading", { name: "Provas agendadas" }).waitFor();
+  await shot(page, "09-disciplina");
+});
+
+await step("biblioteca: enviar PDF ligado à disciplina, link de referência, filtrar, visualizar, editar e excluir", async () => {
+  await page.goto(`${BASE}/app/materials`);
+  await page.getByRole("button", { name: "Enviar arquivos" }).click();
+  let dialog = page.getByRole("dialog", { name: "Enviar arquivos" });
+  await dialog.locator("#upload-category").selectOption({ label: "Artigo científico" });
+  await dialog.locator("#upload-course").selectOption({ label: "Embriologia" });
+  await dialog.locator('input[type="file"]').setInputFiles({ name: "Artigo gastrulação.pdf", mimeType: "application/pdf", buffer: Buffer.from("%PDF-1.4\n%%EOF") });
+  await dialog.getByText("✓").waitFor({ timeout: 15_000 });
+  await dialog.getByRole("button", { name: "Concluir" }).click();
+  await page.getByText("Artigo gastrulação", { exact: true }).waitFor();
+
+  await page.getByRole("button", { name: "Link ou referência" }).click();
+  dialog = page.getByRole("dialog", { name: "Adicionar link ou referência" });
+  await dialog.locator("#material-url").fill("https://pubmed.ncbi.nlm.nih.gov/123");
+  await dialog.locator("#material-title").fill("Revisão sobre néfrons");
+  await dialog.locator("#details-course").selectOption({ label: "Anatomia Humana" });
+  await dialog.getByRole("button", { name: "Adicionar" }).click();
+  await page.getByText("Revisão sobre néfrons").waitFor();
+
+  await page.getByLabel("Disciplina").selectOption({ label: "Embriologia" });
+  assert(await page.getByText("Revisão sobre néfrons").count() === 0, "filtro por disciplina falhou");
+  await page.getByText("Artigo gastrulação", { exact: true }).waitFor();
+  await page.getByLabel("Disciplina").selectOption({ label: "Todas as disciplinas" });
+  await page.getByLabel("Tipo de material").selectOption({ label: "Link" });
+  assert(await page.getByText("Artigo gastrulação", { exact: true }).count() === 0, "filtro por tipo falhou");
+  await page.getByLabel("Tipo de material").selectOption({ label: "Todos os tipos" });
+
+  await page.getByRole("button", { name: "Visualizar Artigo gastrulação" }).click();
+  const frame = page.getByRole("dialog", { name: "Artigo gastrulação" }).locator("iframe");
+  await frame.waitFor();
+  const src = await frame.getAttribute("src");
+  const response = await page.request.get(`${BASE}${src}`);
+  assert(response.ok() && response.headers()["content-type"]?.includes("pdf"), "pré-visualização do PDF não carregou");
+  await page.getByRole("dialog", { name: "Artigo gastrulação" }).getByRole("button", { name: "Fechar" }).click();
+
+  await page.getByRole("button", { name: "Editar Revisão sobre néfrons" }).click();
+  dialog = page.getByRole("dialog", { name: "Editar material" });
+  await dialog.locator("#material-title").fill("Revisão sobre néfrons (2024)");
+  await dialog.getByRole("button", { name: "Salvar" }).click();
+  await page.getByText("Revisão sobre néfrons (2024)").waitFor();
+  await page.reload();
+  await page.getByText("Revisão sobre néfrons (2024)").waitFor();
+  await shot(page, "10-materiais");
+
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: "Excluir Revisão sobre néfrons (2024)" }).click();
+  await page.getByText("Revisão sobre néfrons (2024)").waitFor({ state: "detached" });
+
+  await page.goto(`${BASE}/app/search?q=gastrulacao`);
+  await page.getByRole("link", { name: /Artigo gastrulação/ }).waitFor();
+});
+
+await step("calendário: criar compromisso, ver em mês/semana/dia/lista, editar e excluir", async () => {
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  await page.goto(`${BASE}/app/calendar`);
+  await page.getByRole("button", { name: "Novo compromisso" }).first().click();
+  let dialog = page.getByRole("dialog", { name: "Novo compromisso" });
+  await dialog.locator('input[name="title"]').fill("Seminário de embriologia");
+  await dialog.locator('select[name="eventType"]').selectOption({ label: "Seminário" });
+  await dialog.locator('select[name="courseId"]').selectOption({ label: "Embriologia" });
+  await dialog.locator('input[name="date"]').fill(today);
+  await dialog.locator('input[name="startTime"]').fill("14:00");
+  await dialog.locator('input[name="endTime"]').fill("16:00");
+  await dialog.getByRole("button", { name: "Criar compromisso" }).click();
+  await page.getByRole("button", { name: /Seminário de embriologia/ }).first().waitFor();
+  for (const view of ["week", "day", "list"]) {
+    await page.goto(`${BASE}/app/calendar?view=${view}&date=${today}`);
+    await page.getByRole("button", { name: /Seminário de embriologia/ }).first().waitFor();
+  }
+  assert(await page.getByText("14:00").count() > 0, "horário local (14:00) deveria aparecer");
+  await shot(page, "11-calendario-lista");
+  await page.getByRole("button", { name: /Seminário de embriologia/ }).first().click();
+  dialog = page.getByRole("dialog", { name: "Editar compromisso" });
+  assert((await dialog.locator('input[name="startTime"]').inputValue()) === "14:00", "horário não preservado na edição");
+  await dialog.locator('input[name="title"]').fill("Seminário de embriologia — grupo 2");
+  await dialog.getByRole("button", { name: "Salvar" }).click();
+  await page.getByRole("button", { name: /grupo 2/ }).first().waitFor();
+  await page.goto(`${BASE}/app/calendar?view=month&date=${today}`);
+  await shot(page, "12-calendario-mes");
+  await page.goto(`${BASE}/app/dashboard`);
+  await page.getByRole("link", { name: /grupo 2/ }).first().waitFor();
+  await page.goto(`${BASE}/app/calendar?view=day&date=${today}`);
+  await page.getByRole("button", { name: /grupo 2/ }).first().click();
+  page.once("dialog", (d) => d.accept());
+  await page.getByRole("button", { name: "Excluir compromisso" }).click();
+  await page.getByText("Nenhum compromisso neste dia.").waitFor();
+});
+
 // ---------------------------------------------------------------- isolation
 const otherContext = await browser.newContext({ viewport: { width: 1280, height: 900 }, locale: "pt-BR" });
 const other = await otherContext.newPage();
