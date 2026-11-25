@@ -28,7 +28,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
       description="Sign in to continue managing your academic life."
       footer={
         <>
-          New to StudyFlow?{" "}
+          New to Atlas Acadêmico?{" "}
           <Link
             href="/signup"
             className="focus-ring rounded-md font-semibold text-primary hover:underline"

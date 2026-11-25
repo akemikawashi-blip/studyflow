@@ -16,8 +16,8 @@ export function MobileBottomNavigation() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 grid h-[84px] grid-cols-4 items-center gap-1 rounded-t-[24px] border-t border-outline-variant/45 bg-surface-container/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_rgb(36_56_156_/_0.08)] backdrop-blur-xl lg:hidden"
-      aria-label="Mobile navigation"
+      className="fixed inset-x-0 bottom-0 z-40 grid h-[84px] grid-cols-4 items-center gap-1 border-t border-outline-variant/45 bg-surface-container/96 px-2 pb-[env(safe-area-inset-bottom)] shadow-[0_-6px_20px_rgb(28_43_69_/_0.06)] backdrop-blur-xl lg:hidden"
+      aria-label="Navegação principal"
     >
       {mobilePrimaryNavigation.map((item) => {
         const active = isActiveRoute(pathname, item.href);

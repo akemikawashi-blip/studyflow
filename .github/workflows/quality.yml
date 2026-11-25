@@ -23,6 +23,8 @@ jobs:
         run: npm run lint
       - name: Type check
         run: npm run typecheck
+      - name: Database migrations and RLS tests
+        run: npm run test:db
       - name: Build
         run: npm run build
         env:

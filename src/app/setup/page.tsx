@@ -23,7 +23,7 @@ const steps = [
   },
   {
     icon: CheckCircle2,
-    title: "Restart StudyFlow",
+    title: "Restart Atlas Acadêmico",
     body: "Stop the development server with Ctrl+C and run npm run dev again.",
   },
 ];
@@ -38,7 +38,7 @@ export default function SetupPage() {
           Phase 2 setup
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">
-          Connect StudyFlow to Supabase
+          Connect Atlas Acadêmico to Supabase
         </h1>
         <p className="mt-4 text-base leading-7 text-muted-foreground">
           The frontend is ready. A Supabase project supplies authentication,

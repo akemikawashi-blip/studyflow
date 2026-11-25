@@ -10,7 +10,7 @@ export default function OfflinePage() {
         </span>
         <h1 className="mt-5 text-2xl font-semibold tracking-[-0.03em]">You are offline</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          StudyFlow needs an internet connection to securely load and save your account data.
+          Atlas Acadêmico needs an internet connection to securely load and save your account data.
         </p>
         <Link
           href="/"

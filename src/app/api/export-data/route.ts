@@ -67,7 +67,7 @@ export async function GET() {
     return Response.json(
       {
         error:
-          "StudyFlow could not prepare the export. Confirm that all database migrations are installed.",
+          "Atlas Acadêmico could not prepare the export. Confirm that all database migrations are installed.",
       },
       { status: 500 },
     );

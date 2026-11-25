@@ -12,7 +12,7 @@ export function ServiceWorkerRegister() {
       try {
         await navigator.serviceWorker.register("/sw.js", { scope: "/" });
       } catch (error) {
-        console.error("StudyFlow service worker registration failed", error);
+        console.error("Atlas Acadêmico service worker registration failed", error);
       }
     };
 

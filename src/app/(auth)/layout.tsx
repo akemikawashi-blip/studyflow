@@ -16,7 +16,7 @@ export default async function AuthLayout({
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(circle at 15% 15%, rgb(222 224 255 / 0.8), transparent 30%), radial-gradient(circle at 85% 80%, rgb(133 246 229 / 0.35), transparent 28%)",
+            "radial-gradient(circle at 15% 15%, rgb(226 231 239 / 0.9), transparent 32%), radial-gradient(circle at 85% 80%, rgb(223 232 222 / 0.7), transparent 30%)",
         }}
       />
       <div className="relative z-10 mx-auto w-full max-w-xl">{children}</div>

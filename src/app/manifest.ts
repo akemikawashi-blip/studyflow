@@ -2,16 +2,17 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "StudyFlow — Student Life Manager",
-    short_name: "StudyFlow",
+    name: "Atlas Acadêmico",
+    short_name: "Atlas",
     description:
-      "Plan courses and tasks, track focused study, manage notes, skills, and student finances in one private workspace.",
+      "Sistema pessoal de organização acadêmica: caderno digital, disciplinas, provas e estudos.",
+    lang: "pt-BR",
     start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait-primary",
-    background_color: "#fdf8fd",
-    theme_color: "#24389c",
+    background_color: "#f5f0e6",
+    theme_color: "#1c2b45",
     categories: ["education", "productivity", "utilities"],
     icons: [
       {

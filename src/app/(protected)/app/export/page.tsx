@@ -7,7 +7,7 @@ export default function ExportPage() {
     <PageContainer>
       <PageHeader
         title="Data export & PDF tools"
-        description="Download your StudyFlow records or turn a text-based study PDF into a shorter downloadable summary."
+        description="Download your Atlas Acadêmico records or turn a text-based study PDF into a shorter downloadable summary."
       />
       <div className="mt-7">
         <ExportManager />
