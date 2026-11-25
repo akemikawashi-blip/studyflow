@@ -5,3 +5,8 @@ export type NavigationItem = {
   href: string;
   icon: LucideIcon;
 };
+
+export type NavigationSection = {
+  title: string;
+  items: NavigationItem[];
+};

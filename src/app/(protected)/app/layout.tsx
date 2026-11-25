@@ -1,5 +1,6 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { requireUser } from "@/lib/auth/current-user";
+import { dateKey, DEFAULT_TIME_ZONE, isValidTimeZone } from "@/lib/dates";
 import { createClient } from "@/lib/supabase/server";
 
 function initialsFromName(name: string) {
@@ -8,7 +9,7 @@ function initialsFromName(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
     .join("");
-  return initials || "ST";
+  return initials || "AA";
 }
 
 export default async function ProtectedAppLayout({
@@ -21,6 +22,7 @@ export default async function ProtectedAppLayout({
     { data: profile },
     { data: preferences },
     { count: unreadNotifications },
+    { data: courses },
   ] = await Promise.all([
     supabase
       .from("profiles")
@@ -29,7 +31,7 @@ export default async function ProtectedAppLayout({
       .maybeSingle(),
     supabase
       .from("user_preferences")
-      .select("theme")
+      .select("theme,time_zone")
       .eq("user_id", user.id)
       .maybeSingle(),
     supabase
@@ -37,13 +39,20 @@ export default async function ProtectedAppLayout({
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
       .eq("read", false),
+    supabase
+      .from("courses")
+      .select("id,course_name,archived")
+      .eq("user_id", user.id)
+      .order("sort_order")
+      .order("course_name"),
   ]);
+  const timeZone = isValidTimeZone(preferences?.time_zone) ? preferences.time_zone : DEFAULT_TIME_ZONE;
 
   const fullName =
     profile?.full_name ??
     (typeof user.user_metadata.full_name === "string"
       ? user.user_metadata.full_name
-      : "Student");
+      : "Estudante");
 
   const themeClass =
     preferences?.theme === "dark"
@@ -56,6 +65,10 @@ export default async function ProtectedAppLayout({
     <div className={`${themeClass ?? ""} min-h-svh bg-background text-foreground`}>
       <AppShell
         unreadNotifications={unreadNotifications ?? 0}
+        quickCapture={{
+          courses: (courses ?? []).filter((course) => !course.archived).map(({ id, course_name }) => ({ id, course_name })),
+          todayKey: dateKey(new Date(), timeZone),
+        }}
         user={{
           name: fullName,
           email: user.email ?? "",

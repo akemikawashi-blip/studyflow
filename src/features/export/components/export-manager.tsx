@@ -216,7 +216,7 @@ async function downloadSummaryPdf(summary: PdfSummary) {
     y += lines.length * lineHeight + (options.gapAfter ?? 8);
   };
 
-  writeWrapped("StudyFlow PDF Summary", { size: 20, bold: true, gapAfter: 16 });
+  writeWrapped("Atlas Acadêmico PDF Summary", { size: 20, bold: true, gapAfter: 16 });
   writeWrapped(`Source: ${summary.fileName}`, { size: 10, gapAfter: 4 });
   writeWrapped(
     `Pages: ${summary.pageCount}   Words: ${summary.wordCount.toLocaleString()}   Generated: ${new Date(summary.generatedAt).toLocaleString()}`,
@@ -342,12 +342,12 @@ export function ExportManager() {
     <div className="grid gap-6">
       <Card>
         <CardHeader>
-          <CardTitle>Export your StudyFlow data</CardTitle>
+          <CardTitle>Export your Atlas Acadêmico data</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
             Download a private copy of your profile, courses, tasks, schedules,
-            GPA records, notes, study sessions and other saved StudyFlow data.
+            GPA records, notes, study sessions and other saved Atlas Acadêmico data.
           </p>
           {exportError ? (
             <p className="mt-4 rounded-xl bg-error-container px-4 py-3 text-sm text-on-error-container">

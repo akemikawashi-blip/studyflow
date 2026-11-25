@@ -21,7 +21,7 @@ export function SettingsManager({ profile, preferences, email }: { profile: Prof
   return (
     <div className="space-y-5">
       <Card id="profile" className="scroll-mt-24 p-5 sm:p-6">
-        <div className="mb-5 flex items-start gap-3"><CircleUserRound className="mt-0.5 size-5 text-primary" /><div><h2 className="text-lg font-semibold">Profile</h2><p className="mt-1 text-sm text-muted-foreground">Update the identity and academic details shown across StudyFlow.</p></div></div>
+        <div className="mb-5 flex items-start gap-3"><CircleUserRound className="mt-0.5 size-5 text-primary" /><div><h2 className="text-lg font-semibold">Profile</h2><p className="mt-1 text-sm text-muted-foreground">Update the identity and academic details shown across Atlas Acadêmico.</p></div></div>
         <form action={profileAction} className="space-y-5">
           <ActionMessage state={profileState} />
           <div className="grid gap-4 sm:grid-cols-2">

@@ -1,25 +1,37 @@
 "use client";
 
 import Link from "next/link";
-import { Award, CalendarClock, CalendarPlus, CircleDollarSign, FileDown, GraduationCap, Plus, Sparkles, SquareCheckBig, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { CalendarClock, CalendarPlus, GraduationCap, Plus, Search, SquareCheckBig, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { NewNoteForm, type NoteCourseOption } from "@/features/notes/components/new-note-dialog";
 
-const quickActions = [
-  { label: "Open tasks", href: "/app/tasks", icon: SquareCheckBig },
-  { label: "Open planner", href: "/app/planner", icon: CalendarPlus },
-  { label: "Open schedule", href: "/app/schedule", icon: CalendarClock },
-  { label: "Open GPA & CGPA", href: "/app/academic", icon: Award },
-  { label: "Log study", href: "/app/study", icon: GraduationCap },
-  { label: "Open finance", href: "/app/finance", icon: CircleDollarSign },
-  { label: "Open skills", href: "/app/skills", icon: Sparkles },
-  { label: "Export or summarize PDF", href: "/app/export", icon: FileDown },
+const quickLinks = [
+  { label: "Nova tarefa", href: "/app/tasks", icon: SquareCheckBig },
+  { label: "Trabalho ou prazo", href: "/app/planner", icon: CalendarPlus },
+  { label: "Prova ou horário", href: "/app/schedule", icon: CalendarClock },
+  { label: "Sessão de estudo", href: "/app/study", icon: GraduationCap },
+  { label: "Buscar", href: "/app/search", icon: Search },
 ];
 
-export function QuickActionMenu() {
+export type QuickCaptureContext = {
+  courses: NoteCourseOption[];
+  todayKey: string;
+};
+
+export function QuickActionMenu({ context }: { context: QuickCaptureContext }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
+  const [lastPath, setLastPath] = useState(pathname);
+
+  // Close after navigation (e.g. once a new note opens in the editor).
+  if (pathname !== lastPath) {
+    setLastPath(pathname);
+    setOpen(false);
+  }
 
   useEffect(() => {
     if (!open) return;
@@ -33,39 +45,41 @@ export function QuickActionMenu() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
+  if (pathname.startsWith("/app/notes/")) return null;
+
   return (
     <div className="fixed bottom-[100px] right-4 z-30 flex flex-col items-end gap-3 lg:bottom-6 lg:right-6">
       {open ? (
-        <div className="w-64 rounded-card border border-outline-variant/55 bg-popover p-3 shadow-[0_18px_50px_rgb(17_17_24_/_0.18)]">
-          <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Quick navigation
-          </p>
-          <div className="flex flex-col gap-1">
-            {quickActions.map((action) => {
-              const Icon = action.icon;
-              return (
-                <Link
-                  key={action.href}
-                  href={action.href}
-                  onClick={() => setOpen(false)}
-                  className="focus-ring flex min-h-11 items-center gap-3 rounded-2xl px-3 text-sm font-medium hover:bg-surface-container-high"
-                >
-                  <span className="grid size-9 place-items-center rounded-xl bg-primary-fixed text-on-primary-fixed">
-                    <Icon className="size-4" aria-hidden="true" />
-                  </span>
-                  {action.label}
-                </Link>
-              );
-            })}
+        <section
+          role="dialog"
+          aria-label="Captura rápida"
+          className="fade-in max-h-[70svh] w-[min(calc(100vw-2rem),24rem)] overflow-y-auto rounded-xl border border-outline-variant bg-popover p-4 shadow-[0_18px_50px_rgb(17_17_24_/_0.2)]"
+        >
+          <p className="eyebrow">Captura rápida</p>
+          <h2 className="mb-3 font-display text-xl font-semibold">Registrar aula</h2>
+          <NewNoteForm courses={context.courses} todayKey={context.todayKey} />
+          <div className="mt-4 border-t border-outline-variant/70 pt-3">
+            <p className="mb-1.5 text-xs font-semibold text-muted-foreground">Ou ir direto para</p>
+            <div className="grid grid-cols-2 gap-1">
+              {quickLinks.map((action) => {
+                const Icon = action.icon;
+                return (
+                  <Link key={action.href} href={action.href} className="focus-ring flex min-h-10 items-center gap-2 rounded-lg px-2 text-sm hover:bg-surface-container-high">
+                    <Icon className="size-4 text-secondary" aria-hidden="true" />
+                    {action.label}
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </section>
       ) : null}
       <Button
         ref={buttonRef}
         size="icon"
-        className="size-14 min-h-14 rounded-[20px] shadow-fab"
+        className="size-14 min-h-14 rounded-2xl shadow-fab"
         onClick={() => setOpen((value) => !value)}
-        aria-label={open ? "Close quick actions" : "Open quick actions"}
+        aria-label={open ? "Fechar captura rápida" : "Captura rápida"}
         aria-expanded={open}
       >
         {open ? <X className="size-6" aria-hidden="true" /> : <Plus className="size-7" aria-hidden="true" />}

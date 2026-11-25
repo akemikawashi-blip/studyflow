@@ -6,7 +6,7 @@ import { InstallAppCard } from "@/components/pwa/install-app-card";
 
 export const metadata: Metadata = {
   title: "Install",
-  description: "Install StudyFlow on your phone, tablet, or computer.",
+  description: "Install Atlas Acadêmico on your phone, tablet, or computer.",
 };
 
 export default function InstallPage() {
@@ -35,7 +35,7 @@ export default function InstallPage() {
         </div>
 
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-primary">
-          StudyFlow app
+          Atlas Acadêmico app
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
           Keep your student workspace one tap away.

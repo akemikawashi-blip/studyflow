@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 export default function AppError({ reset }: { reset: () => void }) {
   return (
     <PageContainer className="max-w-3xl">
-      <ErrorState description="StudyFlow could not render this workspace. Retry the page to continue." />
+      <ErrorState description="Atlas Acadêmico could not render this workspace. Retry the page to continue." />
       <Button className="mt-4" onClick={reset}>
         <RotateCcw className="size-4" aria-hidden="true" />
         Try again

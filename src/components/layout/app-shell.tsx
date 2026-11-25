@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { DesktopSidebar } from "@/components/layout/desktop-sidebar";
 import { MobileBottomNavigation } from "@/components/layout/mobile-bottom-navigation";
 import { MobileHeader } from "@/components/layout/mobile-header";
-import { QuickActionMenu } from "@/components/shared/quick-action-menu";
+import { QuickActionMenu, type QuickCaptureContext } from "@/components/shared/quick-action-menu";
 
 export type AppShellUser = {
   name: string;
@@ -15,10 +15,12 @@ export function AppShell({
   children,
   user,
   unreadNotifications = 0,
+  quickCapture,
 }: {
   children: ReactNode;
   user: AppShellUser;
   unreadNotifications?: number;
+  quickCapture: QuickCaptureContext;
 }) {
   return (
     <div className="min-h-svh lg:flex">
@@ -27,7 +29,7 @@ export function AppShell({
         <MobileHeader initials={user.initials} unreadCount={unreadNotifications} />
         <main>{children}</main>
       </div>
-      <QuickActionMenu />
+      <QuickActionMenu context={quickCapture} />
       <MobileBottomNavigation />
     </div>
   );

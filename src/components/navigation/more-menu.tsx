@@ -48,7 +48,7 @@ export function MoreMenu() {
         >
           <Grid2X2 className="size-5" aria-hidden="true" />
         </span>
-        <span className={cn(active ? "text-primary" : "text-on-surface-variant")}>More</span>
+        <span className={cn(active ? "text-primary" : "text-on-surface-variant")}>Mais</span>
       </button>
 
       {open ? (
@@ -57,25 +57,25 @@ export function MoreMenu() {
             type="button"
             className="absolute inset-0 bg-black/35 backdrop-blur-[2px]"
             onClick={() => setOpen(false)}
-            aria-label="Close more menu"
+            aria-label="Fechar menu"
           />
           <section
             role="dialog"
             aria-modal="true"
             aria-labelledby="more-menu-title"
-            className="absolute inset-x-0 bottom-0 max-h-[88svh] overflow-y-auto rounded-t-[32px] border border-outline-variant/55 bg-popover p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-18px_50px_rgb(17_17_24_/_0.18)]"
+            className="absolute inset-x-0 bottom-0 max-h-[88svh] overflow-y-auto rounded-t-2xl border border-outline-variant/55 bg-popover p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-[0_-18px_50px_rgb(17_17_24_/_0.18)]"
           >
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
-                <h2 id="more-menu-title" className="text-xl font-semibold">More tools</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Open another StudyFlow workspace.</p>
+                <h2 id="more-menu-title" className="text-xl font-semibold">Mais seções</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Acesse as demais áreas do Atlas.</p>
               </div>
               <Button
                 ref={closeButtonRef}
                 variant="ghost"
                 size="icon"
                 onClick={() => setOpen(false)}
-                aria-label="Close more menu"
+                aria-label="Fechar menu"
               >
                 <X className="size-5" aria-hidden="true" />
               </Button>

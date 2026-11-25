@@ -22,17 +22,18 @@ function SignOutSubmit({
       variant="ghost"
       size={iconOnly ? "icon" : "default"}
       className={cn(
+        "text-inherit hover:bg-white/10",
         iconOnly ? "size-9 min-h-9" : "w-full justify-start",
         collapsed && "justify-center px-0",
       )}
       disabled={pending}
-      aria-label={pending ? "Signing out" : "Sign out"}
-      title={collapsed ? "Sign out" : undefined}
+      aria-label={pending ? "Saindo" : "Sair"}
+      title={collapsed ? "Sair" : undefined}
     >
       <LogOut className="size-4 shrink-0" aria-hidden="true" />
       {!iconOnly ? (
         <span className={cn("ml-2", collapsed && "sr-only")}>
-          {pending ? "Signing out…" : "Sign out"}
+          {pending ? "Saindo…" : "Sair"}
         </span>
       ) : null}
     </Button>

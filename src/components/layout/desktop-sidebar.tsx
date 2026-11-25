@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight, GraduationCap } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 import type { AppShellUser } from "@/components/layout/app-shell";
-import { Button } from "@/components/ui/button";
+import { AtlasMark } from "@/components/shared/atlas-mark";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
-import { desktopNavigation } from "@/lib/navigation";
+import { navigationSections } from "@/lib/navigation";
 import { cn } from "@/lib/utils";
 
 function isActiveRoute(pathname: string, href: string) {
@@ -22,96 +22,82 @@ export function DesktopSidebar({ user }: { user: AppShellUser }) {
   return (
     <aside
       className={cn(
-        "sticky top-0 hidden h-svh shrink-0 flex-col border-r border-outline-variant/55 bg-surface-container-low transition-[width] duration-200 lg:flex",
-        collapsed ? "w-24" : "w-72",
+        "sticky top-0 hidden h-svh shrink-0 flex-col bg-sidebar text-sidebar-foreground transition-[width] duration-200 lg:flex",
+        collapsed ? "w-20" : "w-68",
       )}
     >
-      <div className="flex h-20 items-center gap-3 px-5">
-        <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-[0_8px_20px_rgb(36_56_156_/_0.18)]">
-          <GraduationCap className="size-6" aria-hidden="true" />
-        </span>
+      <div className={cn("flex h-20 items-center gap-3 px-5", collapsed && "justify-center px-0")}>
+        <AtlasMark className="size-9 shrink-0 text-gold" />
         <div className={cn("min-w-0", collapsed && "sr-only")}>
-          <p className="truncate text-lg font-semibold tracking-[-0.02em]">
-            StudyFlow
-          </p>
-          <p className="truncate text-xs text-muted-foreground">
-            Student Life Manager
-          </p>
+          <p className="truncate font-display text-xl font-semibold leading-tight tracking-tight">Atlas Acadêmico</p>
+          <p className="truncate text-[11px] uppercase tracking-[0.18em] text-sidebar-muted">Medicina</p>
         </div>
       </div>
 
-      <nav
-        className="flex flex-1 flex-col gap-1.5 overflow-y-auto px-3 py-4"
-        aria-label="Primary navigation"
-      >
-        {desktopNavigation.map((item) => {
-          const active = isActiveRoute(pathname, item.href);
-          const Icon = item.icon;
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "focus-ring flex min-h-12 items-center gap-3 rounded-2xl px-3 text-sm font-medium text-on-surface-variant transition-colors",
-                active
-                  ? "bg-primary text-primary-foreground shadow-[0_8px_20px_rgb(36_56_156_/_0.14)]"
-                  : "hover:bg-surface-container-high hover:text-foreground",
-                collapsed && "justify-center px-0",
-              )}
-              title={collapsed ? item.label : undefined}
-            >
-              <Icon className="size-5 shrink-0" aria-hidden="true" />
-              <span className={cn("truncate", collapsed && "sr-only")}>
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+      <nav className="flex flex-1 flex-col gap-5 overflow-y-auto px-3 pb-4 pt-2" aria-label="Navegação principal">
+        {navigationSections.map((section) => (
+          <div key={section.title}>
+            <p className={cn("mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-sidebar-muted", collapsed && "sr-only")}>
+              {section.title}
+            </p>
+            <div className="flex flex-col gap-0.5">
+              {section.items.map((item) => {
+                const active = isActiveRoute(pathname, item.href);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    aria-current={active ? "page" : undefined}
+                    title={collapsed ? item.label : undefined}
+                    className={cn(
+                      "focus-ring relative flex min-h-10 items-center gap-3 rounded-lg px-3 text-sm transition-colors",
+                      active
+                        ? "bg-sidebar-accent font-semibold text-sidebar-foreground"
+                        : "text-sidebar-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                      collapsed && "justify-center px-0",
+                    )}
+                  >
+                    {active ? <span className="absolute inset-y-2 left-0 w-0.5 rounded-full bg-gold" aria-hidden="true" /> : null}
+                    <Icon className="size-[18px] shrink-0" aria-hidden="true" />
+                    <span className={cn("truncate", collapsed && "sr-only")}>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
 
-      <div className="border-t border-outline-variant/55 p-3">
-        <div
-          className={cn(
-            "mb-3 flex items-center gap-3 rounded-2xl bg-surface-container px-3 py-3",
-            collapsed && "justify-center px-0",
-          )}
-        >
-          <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary-fixed text-sm font-semibold text-on-primary-fixed">
+      <div className="border-t border-white/8 p-3">
+        <div className={cn("mb-2 flex items-center gap-3 rounded-lg px-2 py-2", collapsed && "justify-center px-0")}>
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-sidebar-accent font-display text-sm font-semibold text-gold">
             {user.initials}
           </span>
           <div className={cn("min-w-0 flex-1", collapsed && "sr-only")}>
             <p className="truncate text-sm font-semibold">{user.name}</p>
-            <p className="truncate text-xs text-muted-foreground">
-              {user.email}
-            </p>
+            <p className="truncate text-xs text-sidebar-muted">{user.email}</p>
           </div>
           {!collapsed ? <SignOutButton iconOnly /> : null}
         </div>
-
         {collapsed ? (
           <div className="mb-2">
             <SignOutButton collapsed />
           </div>
         ) : null}
-
-        <Button
-          variant="ghost"
-          className={cn("w-full", collapsed ? "px-0" : "justify-between")}
+        <button
+          type="button"
+          className={cn(
+            "focus-ring flex min-h-10 w-full items-center gap-2 rounded-lg px-3 text-xs text-sidebar-muted hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+            collapsed ? "justify-center px-0" : "justify-between",
+          )}
           onClick={() => setCollapsed((value) => !value)}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-label={collapsed ? "Expandir menu lateral" : "Recolher menu lateral"}
           aria-expanded={!collapsed}
         >
-          <span className={cn(collapsed && "sr-only")}>
-            {collapsed ? "Expand" : "Collapse sidebar"}
-          </span>
-          {collapsed ? (
-            <ChevronRight className="size-5" aria-hidden="true" />
-          ) : (
-            <ChevronLeft className="size-5" aria-hidden="true" />
-          )}
-        </Button>
+          <span className={cn(collapsed && "sr-only")}>Recolher</span>
+          {collapsed ? <ChevronRight className="size-4" aria-hidden="true" /> : <ChevronLeft className="size-4" aria-hidden="true" />}
+        </button>
       </div>
     </aside>
   );

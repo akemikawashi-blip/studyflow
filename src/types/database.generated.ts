@@ -13,6 +13,32 @@ type TableDefinition<Row, Insert, Update = Partial<Insert>> = {
   Relationships: [];
 };
 
+export type MaterialCategory =
+  | "pdf"
+  | "slides"
+  | "photo"
+  | "image"
+  | "book"
+  | "article"
+  | "summary"
+  | "mind_map"
+  | "document"
+  | "reference"
+  | "other";
+
+export type AtlasSearchKind =
+  | "note"
+  | "lesson"
+  | "course"
+  | "material"
+  | "task"
+  | "assignment"
+  | "exam"
+  | "event"
+  | "skill"
+  | "study"
+  | "finance";
+
 type BaseRow = {
   id: string;
   user_id: string;
@@ -96,6 +122,8 @@ export type Database = {
           color: string;
           target_grade: string | null;
           current_grade: string | null;
+          archived: boolean;
+          sort_order: number;
         },
         {
           id?: string;
@@ -108,6 +136,8 @@ export type Database = {
           color?: string;
           target_grade?: string | null;
           current_grade?: string | null;
+          archived?: boolean;
+          sort_order?: number;
           created_at?: string;
           updated_at?: string;
         }
@@ -635,6 +665,14 @@ export type Database = {
           tags: string[];
           favorite: boolean;
           pinned: boolean;
+          lesson_id: string | null;
+          content_format: "plain" | "html";
+          plain_text: string;
+          key_points: string | null;
+          memorize: string | null;
+          doubts: string | null;
+          professor_remarks: string | null;
+          references_text: string | null;
         },
         {
           id?: string;
@@ -646,6 +684,72 @@ export type Database = {
           tags?: string[];
           favorite?: boolean;
           pinned?: boolean;
+          lesson_id?: string | null;
+          content_format?: "plain" | "html";
+          plain_text?: string;
+          key_points?: string | null;
+          memorize?: string | null;
+          doubts?: string | null;
+          professor_remarks?: string | null;
+          references_text?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        }
+      >;
+      lessons: TableDefinition<
+        BaseOwnedRow & {
+          course_id: string | null;
+          lesson_date: string;
+          title: string;
+          topic: string | null;
+          unit: string | null;
+          professor: string | null;
+          summary: string | null;
+        },
+        {
+          id?: string;
+          user_id: string;
+          course_id?: string | null;
+          lesson_date: string;
+          title: string;
+          topic?: string | null;
+          unit?: string | null;
+          professor?: string | null;
+          summary?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        }
+      >;
+      materials: TableDefinition<
+        BaseOwnedRow & {
+          course_id: string | null;
+          lesson_id: string | null;
+          note_id: string | null;
+          title: string;
+          category: MaterialCategory;
+          description: string | null;
+          storage_path: string | null;
+          file_name: string | null;
+          mime_type: string | null;
+          size_bytes: number | null;
+          external_url: string | null;
+          tags: string[];
+        },
+        {
+          id?: string;
+          user_id: string;
+          course_id?: string | null;
+          lesson_id?: string | null;
+          note_id?: string | null;
+          title: string;
+          category?: MaterialCategory;
+          description?: string | null;
+          storage_path?: string | null;
+          file_name?: string | null;
+          mime_type?: string | null;
+          size_bytes?: number | null;
+          external_url?: string | null;
+          tags?: string[];
           created_at?: string;
           updated_at?: string;
         }
@@ -784,7 +888,21 @@ export type Database = {
         Relationships: [];
       };
     };
-    Functions: Record<string, never>;
+    Functions: {
+      atlas_search: {
+        Args: { search_query: string; max_results?: number };
+        Returns: {
+          kind: AtlasSearchKind;
+          id: string;
+          title: string;
+          snippet: string;
+          occurred_on: string | null;
+          course_id: string | null;
+          parent_id: string | null;
+          updated_at: string;
+        }[];
+      };
+    };
     Enums: {
       app_theme: "light" | "dark" | "system";
       task_category:

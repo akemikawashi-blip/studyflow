@@ -18,7 +18,7 @@ export default async function AcademicPage() {
     <PageContainer>
       <PageHeader
         title="GPA & CGPA"
-        description="Save the GPA and completed credits for each semester. StudyFlow calculates your overall credit-weighted CGPA automatically."
+        description="Save the GPA and completed credits for each semester. Atlas Acadêmico calculates your overall credit-weighted CGPA automatically."
       />
       {error ? (
         <div className="mt-7 rounded-card bg-error-container p-5 text-on-error-container">

@@ -66,7 +66,7 @@ export function InstallAppCard() {
             <MonitorSmartphone className="size-5" aria-hidden="true" />
           </span>
           <div>
-            <h2 className="font-semibold">StudyFlow is installed</h2>
+            <h2 className="font-semibold">Atlas Acadêmico is installed</h2>
             <p className="mt-1 text-sm leading-6">
               Open it from your home screen, Start menu, or app launcher.
             </p>
@@ -84,7 +84,7 @@ export function InstallAppCard() {
             <Download className="size-5" aria-hidden="true" />
           </span>
           <div className="min-w-0 flex-1">
-            <h2 className="font-semibold">Install StudyFlow</h2>
+            <h2 className="font-semibold">Install Atlas Acadêmico</h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
               Install the public web app for a full-screen experience and quick access from your device.
             </p>
@@ -108,8 +108,8 @@ export function InstallAppCard() {
             </h3>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               {isIos
-                ? "Open StudyFlow in Safari, tap Share, then choose Add to Home Screen."
-                : "Open your browser menu and choose Install StudyFlow, Install app, or Add to Home screen. Chrome and Edge usually show the option in the address bar or menu."}
+                ? "Open Atlas Acadêmico in Safari, tap Share, then choose Add to Home Screen."
+                : "Open your browser menu and choose Install Atlas Acadêmico, Install app, or Add to Home screen. Chrome and Edge usually show the option in the address bar or menu."}
             </p>
           </div>
         </div>

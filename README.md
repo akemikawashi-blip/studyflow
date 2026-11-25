@@ -1,4 +1,55 @@
-# StudyFlow — Dynamic Academic Tools
+# Atlas Acadêmico
+
+Sistema pessoal de organização acadêmica para a graduação em Medicina, construído sobre a base StudyFlow (Next.js 16, React 19, TypeScript, Tailwind CSS 4 e Supabase com autenticação, Row Level Security e Storage).
+
+Os dados ficam no Supabase da própria usuária: sincronizam entre celular, tablet e computador, com cada registro protegido por RLS. Não há dados de exemplo — tudo o que aparece vem do que você cadastra.
+
+## O que já funciona (Etapa 1)
+
+- **Identidade visual**: azul-marinho, verde-sálvia, papel bege, dourado envelhecido; títulos em serifa (Newsreader) e texto em Inter; modo claro/escuro.
+- **Navegação** em português, organizada por seções, com menu inferior no celular.
+- **Painel**: saudação e data no fuso da usuária, resumo da semana, *Minha semana acadêmica* (aulas da grade, provas, entregas, eventos e tarefas), *Preciso resolver* (atrasos, provas em até 7 dias, entregas em até 3 dias), próximas provas, trabalhos pendentes, calendário do mês, aulas recentes, disciplinas em andamento e progresso de estudos vs. meta.
+- **Captura rápida** (botão +): registrar uma aula em segundos de qualquer página.
+- **Caderno digital**: cada anotação pode ser uma aula (disciplina, data, professor, assunto, unidade temática), com editor rico — títulos, negrito/itálico/sublinhado, destaque, listas, checklists, tabelas, citações, blocos de *Observação*, *Conceito importante* e *Correlação clínica*, imagens (inclusive colar/arrastar) e anexos. Campos de estudo: pontos importantes, preciso memorizar, dúvidas, observações do professor, referências e palavras-chave.
+- **Salvamento automático** com indicador, nova tentativa em caso de falha e rascunho local de segurança (se a conexão cair, o texto pode ser recuperado no mesmo aparelho).
+- **Visualização do caderno** por disciplina, data, assunto, professor ou palavra-chave, com filtros e busca no texto completo.
+- **Arquivos** (PDF, slides, fotos, documentos — até 50 MB) em bucket **privado**; cada usuária só acessa a própria pasta, e os links passam por `/api/files/…`, que confere a sessão antes de gerar uma URL assinada de 60 segundos.
+- **Busca global** sem diferenciar acentos/maiúsculas em anotações, aulas, disciplinas, materiais, provas, trabalhos, tarefas, eventos, estudos, habilidades e finanças, com trecho destacado.
+- Módulos herdados continuam funcionando (Disciplinas e prazos, Horários e provas, Tarefas, Estudos, Desempenho semestral, Finanças, Habilidades, Notificações, Exportação, Configurações). Eles ainda têm textos em inglês e serão adaptados nas próximas etapas.
+
+## Atualizar o banco (obrigatório para a Etapa 1)
+
+- **Projeto Supabase já existente**: abra *SQL Editor*, cole todo o `supabase/atlas-upgrade.sql` e clique em *Run*. É aditivo e pode ser executado mais de uma vez; não apaga nem duplica dados.
+- **Projeto novo**: rode `supabase/phase2-complete.sql` (já inclui a atualização).
+- Pela CLI: `npm run db:push`.
+
+A atualização cria as tabelas `lessons` e `materials`, acrescenta colunas ao caderno (`notes`) e às disciplinas (`courses.archived`, `courses.sort_order`), cria o bucket privado `atlas-files` com políticas por usuária e a função de busca `atlas_search`. Novas contas passam a usar fuso `America/Sao_Paulo` e moeda BRL; contas existentes mantêm suas preferências (ajuste o fuso em Configurações se o painel avisar).
+
+## Testes
+
+```bash
+npm run check      # lint + typecheck + build
+npm run test:db    # aplica todas as migrações num PostgreSQL descartável e testa RLS, Storage e busca
+npm run test:e2e   # fluxos completos no navegador (Playwright) contra PostgreSQL real
+```
+
+`test:e2e` usa `scripts/e2e/fake-supabase.mjs`, um dublê local da API do Supabase que executa as consultas no PostgreSQL real como o papel `authenticated` — ou seja, o RLS real decide o acesso. Autenticação e Storage são simulados (as políticas reais do Storage são verificadas em `test:db`). Requer binários do PostgreSQL 15+ e Playwright com Chromium.
+
+## Plano de adaptação
+
+| Etapa | Conteúdo | Situação |
+| --- | --- | --- |
+| 1 | Arquitetura, identidade visual, navegação, painel, caderno digital, arquivos, busca global | **Concluída** |
+| 2 | Página individual por disciplina (horários, conteúdo programático, histórico de aulas, materiais, provas, dificuldades), semestres, arquivar/reordenar, biblioteca de materiais com filtros e visualização de PDF, calendário mensal/semanal/diário/lista | Próxima |
+| 3 | Provas e simulados com notas, pesos e erros; calculadora de médias configurável por disciplina; banco de questões e montagem de simulados; flashcards e revisão espaçada com intervalos ajustáveis | Planejada |
+| 4 | Tarefas com Kanban e etapas; projetos e iniciação científica; relatórios e histórico por semestre com exportação | Planejada |
+| 5 | Caixa de entrada em linguagem natural (classificação sugerida, sempre com confirmação; nunca inventa datas ou disciplinas), automações, importação de backup | Planejada |
+
+Decisões de arquitetura: reaproveitar `courses` como disciplinas, `notes` como caderno e `exam_schedules`/`assignments` para avaliações, ligando tudo a `lessons` (a aula é o ponto de conexão entre anotações, materiais, questões, provas e revisões futuras). Nenhuma tabela existente foi substituída.
+
+---
+
+## Documentação herdada do StudyFlow (base técnica)
 
 StudyFlow is a responsive student productivity web application built with Next.js 16, React 19, TypeScript, Tailwind CSS, and Supabase.
 

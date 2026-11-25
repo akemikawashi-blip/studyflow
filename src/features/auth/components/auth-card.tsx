@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { GraduationCap } from "lucide-react";
+
+import { AtlasMark } from "@/components/shared/atlas-mark";
 
 type AuthCardProps = {
   title: string;
@@ -16,21 +17,21 @@ export function AuthCard({
   footer,
 }: AuthCardProps) {
   return (
-    <section className="surface-panel w-full rounded-[2rem] p-6 sm:p-8 lg:p-10">
+    <section className="surface-panel w-full rounded-2xl p-6 sm:p-8 lg:p-10">
       <div className="mb-7">
         <Link
           href="/"
           className="focus-ring mb-6 inline-flex items-center gap-3 rounded-2xl"
         >
-          <span className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-[0_10px_24px_rgb(36_56_156_/_0.2)]">
-            <GraduationCap className="size-6" aria-hidden="true" />
+          <span className="grid size-12 place-items-center rounded-xl bg-primary text-gold">
+            <AtlasMark className="size-8" />
           </span>
           <span>
-            <span className="block text-xl font-semibold tracking-[-0.02em] text-primary">
-              StudyFlow
+            <span className="block font-display text-2xl font-semibold text-primary">
+              Atlas Acadêmico
             </span>
             <span className="block text-xs text-muted-foreground">
-              Student Life Manager
+              Organização acadêmica pessoal
             </span>
           </span>
         </Link>
