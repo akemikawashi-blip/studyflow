@@ -26,6 +26,8 @@ export async function GET() {
     timetable,
     exams,
     semesters,
+    lessons,
+    materials,
   ] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("user_preferences").select("*").eq("user_id", user.id).maybeSingle(),
@@ -42,6 +44,8 @@ export async function GET() {
     supabase.from("class_timetable_entries").select("*").eq("user_id", user.id).order("day_of_week").order("start_time"),
     supabase.from("exam_schedules").select("*").eq("user_id", user.id).order("exam_date").order("start_time"),
     supabase.from("academic_semesters").select("*").eq("user_id", user.id).order("sort_order").order("created_at"),
+    supabase.from("lessons").select("*").eq("user_id", user.id).order("lesson_date"),
+    supabase.from("materials").select("*").eq("user_id", user.id).order("created_at"),
   ]);
 
   const results = [
@@ -60,6 +64,8 @@ export async function GET() {
     timetable,
     exams,
     semesters,
+    lessons,
+    materials,
   ];
   const firstError = results.find((result) => result.error)?.error;
 
@@ -95,5 +101,8 @@ export async function GET() {
     classTimetable: timetable.data ?? [],
     examSchedule: exams.data ?? [],
     academicSemesters: semesters.data ?? [],
+    lessons: lessons.data ?? [],
+    // File contents stay in private storage; this lists each file's metadata.
+    materials: materials.data ?? [],
   });
 }
